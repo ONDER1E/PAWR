@@ -28,3 +28,23 @@ window.webpackChunkdiscord_app.push([
 ]);
 console.log('%cWorked!', 'font-size: 50px');
 console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
+```
+3. Set "listen_to_arrival" to "false" if your a ground controller so you don't recieve the flight plans of planes that are arriving since your only job is to talk to those who are taxing/pushing back and those who want their IFR/VFR clearance
+4. Set "departure_is_with" to "Tower" if you're a ground controller
+5. Set "airport" to your ICAO airport code
+6. Set "default_runway" to the runway you're normally gonna use for departures
+
+## Instructions for use:
+1. If you haven't already install the latest release from this repo ( bottom right of your screen ), node.js, python and the following dependencies using npm:
+```js
+npm i discord.js-selfbot-v13
+```
+2. After configuring config.json extract the release you've just downloaded.
+3. Open vscode then open folder by pressing ctrl+k+o then navigate to a folder that contains "main.js" from the release you've just downloaded.
+4. Press F5 to run main.js, now the code is running.
+5. View Departure.yaml and Arrival.yaml in vscode to see a live update of flight plans coming to and from your airport.
+
+6. To delete a flight plan run the script using F5 if you haven't already and navigate to the terminal tab at the bottom then run this command:
+```py
+python rm
+```
