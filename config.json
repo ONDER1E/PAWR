@@ -1,0 +1,13 @@
+{
+    "airport": "ITKO",
+    "guildId": "919656909563371600",
+    "channelId": "919751812909781092",
+    "start_squawk": 1200,
+    "increment_squawk_by": 1,
+    "departure_is_with": "Me",
+    "default_runway": 31,
+    "listen_to_departure": "True",
+    "listen_to_arrival": "True",
+    "token": ""
+    
+}
