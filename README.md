@@ -1,14 +1,13 @@
 # PAWR - PTFS ATC Workload Reducer
 
-PAWR is a tool designed to reduce the workload of Air Traffic Controllers (ATC) on Discord. It achieves this by handling various tasks, such as breaking Discord's Terms of Service (TOS), listing flight plans, and more.
+PAWR is a tool designed to reduce the workload of Air Traffic Controllers (ATC) on Discord. It achieves this by handling various tasks such as breaking Discord's Terms of Service (TOS), listing flight plans, and more.
 
 ## Configuration Instructions (config.json):
 
 1. Edit the file `config.json`.
-2. Set "Token" to your Discord token. If you don't know your Discord token, follow these steps:
+2. Set "Token" to your Discord token. If you don't know your Discord token open discord in a web brower, enter developer tools ( ctrl+shit+i )  --> navigate to the console tab at the top and paste in this code:
 
 ```javascript
-// Paste this code in the browser console (Ctrl+Shift+I in Chrome) while Discord is open.
 window.webpackChunkdiscord_app.push([
   [Math.random()],
   {},
