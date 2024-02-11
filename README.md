@@ -35,7 +35,7 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 6. Set "default_runway" to the runway you're normally gonna use for departures
 
 ## Instructions for use:
-1. If you haven't already install the latest release from this repo ( bottom right of your screen ), node.js, python and the following dependencies using npm:
+1. If you haven't already install the latest release from this repo ( bottom right of your screen ), vscode, node.js, python and the following dependency using npm:
 ```js
 npm i discord.js-selfbot-v13
 ```
@@ -43,8 +43,9 @@ npm i discord.js-selfbot-v13
 3. Open vscode then open folder by pressing ctrl+k+o then navigate to a folder that contains "main.js" from the release you've just downloaded.
 4. Press F5 to run main.js, now the code is running.
 5. View Departure.yaml and Arrival.yaml in vscode to see a live update of flight plans coming to and from your airport.
+6. To stop the code press the red square at the top of vscode
 
-6. To delete a flight plan run the script using F5 if you haven't already and navigate to the terminal tab at the bottom then run this command:
+7. To delete a flight plan run the script using F5 if you haven't already and navigate to the terminal tab at the bottom then run this command:
 ```py
 python rm
 ```
