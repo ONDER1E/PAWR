@@ -35,9 +35,10 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 6. Set `"default_runway"` to the runway you're normally gonna use for departures
 
 ## Instructions for use:
-1. If you haven't already install the **latest release from this repo** ( bottom right of your screen ), **vscode**, **node.js**, **python** and the following dependency using npm:
+1. If you haven't already install the **latest release from this repo** ( bottom right of your screen ), **vscode**, **node.js**, **python** and the following dependencies using cmd:
 ```js
 npm i discord.js-selfbot-v13
+winget install "FFmpeg (Essentials Build)"
 ```
 2. After configuring `config.json` extract the release you've just downloaded.
 3. Open `vscode` then open folder by pressing `ctrl+k+o` then navigate to a folder that contains `"main.js"` from the release you've just downloaded.
