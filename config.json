@@ -1,13 +1,21 @@
 {
-    "airport": "ITKO",
+    "airport": "IRFD",
     "guildId": "919656909563371600",
     "channelId": "919751812909781092",
     "start_squawk": 1200,
+    "renew_squawk_on_startup": "True",
     "increment_squawk_by": 1,
     "departure_is_with": "Me",
-    "default_runway": 31,
+    "default_runway": "26L",
     "listen_to_departure": "True",
     "listen_to_arrival": "True",
+    "enable_audio": "True",
+    "enable_ping_audio": "True",
+    "enable_start_audio": "False",
+    "enable_ready_audio": "False",
+    "start_volume": "0.04",
+    "ready_volume": "0.06",
+    "ping_volume": "0.02",
     "token": ""
     
 }

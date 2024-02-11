@@ -1,29 +1,36 @@
 const { exec } = require('child_process');
-play_audio("Z:\\vscode\\selfbot\\start.mp3", "0.04", 152)
-const { Client } = require('discord.js-selfbot-v13');
-const client = new Client();
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+if (config.enable_start_audio == "True") {
+  play_audio("start.mp3", config.start_volume, 152)
+}
+const { Client } = require('discord.js-selfbot-v13');
+const client = new Client();
 const squawkFile = 'current_squawk';
 fs.writeFileSync("Departure.yaml", "-----------------------------------\nDeparting\n-----------------------------------\n");
 fs.writeFileSync("Arrival.yaml", `-----------------------------------\nArriving\n${'-' .repeat(35)}`);
 
+if (config.renew_squawk_on_startup == "True") {
+  saveCurrentSquawk(squawkFile, 1200);
+}
+
 function play_audio(audioFile, volume, start_at = 0, kill_prev = false) {
+  if(config.enable_audio == "True") {
+    let command = `ffplay -autoexit -nodisp -loglevel panic -ss ${start_at} -af "volume=${volume}" "${audioFile}"`;
+    if (kill_prev != true) {
+      run(command)
+    } else {
+      run("taskkill /IM ffplay.exe /F")
+      setTimeout(() => {
+        run(command);
+      }, 500);
+    }
 
-  let command = `ffplay -autoexit -nodisp -loglevel panic -ss ${start_at} -af "volume=${volume}" "${audioFile}"`;
-  if (kill_prev != true) {
-    run(command)
-  } else {
-    run("taskkill /IM ffplay.exe /F")
-    setTimeout(() => {
-      run(command);
-    }, 50);
-  }
-
-  function run(command) {
-    exec(command, (err) => {
-      
-    });
+    function run(command) {
+      exec(command, (err) => {
+        
+      });
+    }
   }
 }
 
@@ -65,7 +72,9 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy)
 
     // Check if "Departing: ITKO" is present in the flight plan
   if (flightPlan.includes(`Departing: ${airport}`) && config.listen_to_departure == "True") {
-    play_audio('Z:\\vscode\\selfbot\\ping.mp3', "0.02")
+    if (config.enable_ping_audio == "True") {
+      play_audio('ping.mp3', config.ping_volume)
+    }
     flightPlan = ICAO_to_name_converter(flightPlan)
     console.log("Departure")
     const outputFileName = "Departure.yaml";
@@ -84,7 +93,9 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy)
     outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_runway}\nDeparture is with: ${config.departure_is_with}\nSquawk Code: ${squawkCode}\n\n`
     fs.writeFileSync(outputFileName, outputContent.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct"));
   } else if (flightPlan.includes(`Arriving: ${airport}`) && config.listen_to_arrival == "True") {
-    play_audio('Z:\\vscode\\selfbot\\ping.mp3', "0.02")
+    if (config.enable_ping_audio == "True") {
+      play_audio('ping.mp3', config.ping_volume)
+    }
     flightPlan = ICAO_to_name_converter(flightPlan)
     console.log("Arrival")
     const outputFileName = "Arrival.yaml";
@@ -141,8 +152,10 @@ function getUpdatedSquawkCode(flightPlan, currentSquawk, incrementBy) {
 const airport = config.airport;
 
 client.on('ready', () => {
-  console.log(`${client.user.username}, flight plan hunting is operational!`);
-  play_audio("Z:\\vscode\\selfbot\\ready.mp3", "0.06", 0, true)
+  console.log(`${client.user.username} PAWR online, flight plan hunting is operational!`);
+  if (config.enable_ready_audio == "True") {
+    play_audio("ready.mp3", config.ready_volume, 0, true)
+  }
 
   const guildId = config.guildId;
   const channelId = config.channelId;
@@ -191,4 +204,4 @@ client.on('ready', () => {
   
 });
 
-client.login('NjkwNTg3NTQwNDMxODMxMTM0.G-pObR.BT-k3_mWPmN_3CfdoA5pyVKanFx4_P8BEeXqgg');
+client.login(config.token);
