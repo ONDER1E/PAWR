@@ -7,8 +7,10 @@ if (config.enable_start_audio == "True") {
 const { Client } = require('discord.js-selfbot-v13');
 const client = new Client();
 const squawkFile = 'current_squawk';
-fs.writeFileSync("Departure.yaml", "-----------------------------------\nDeparting\n-----------------------------------\n");
-fs.writeFileSync("Arrival.yaml", `-----------------------------------\nArriving\n${'-' .repeat(35)}`);
+if (config.reset_arrivals_and_departures_on_startup == "True") {
+  fs.writeFileSync("Departure.yaml", "-----------------------------------\nDeparting\n-----------------------------------\n");
+  fs.writeFileSync("Arrival.yaml", `-----------------------------------\nArriving\n${'-' .repeat(35)}`);
+}
 
 if (config.renew_squawk_on_startup == "True") {
   saveCurrentSquawk(squawkFile, 1200);
