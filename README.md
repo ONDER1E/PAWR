@@ -42,5 +42,5 @@ winget install "FFmpeg (Essentials Build)"
 2. After configuring `config.json` extract the release you've just downloaded.
 3. Open the release you've just downloaded and run start.bat.
 4. You might get a firewall prompt for python, allow it.
-5. Go on your web brower and enter [http://](http://localhost:8000/). 
+5. Go on your web brower and enter [http://localhost:8000/](http://localhost:8000/). 
 6. To stop the code press close the two teminals that open when you opened start.bat.
