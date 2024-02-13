@@ -1,5 +1,5 @@
 import os
-clear = lambda: os.system('cls' if os.name=='nt' else 'clear')
+clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 clear()
 from flask import Flask, render_template, send_from_directory, request
 import subprocess
@@ -13,6 +13,7 @@ log.setLevel(logging.ERROR)
 js_process = None
 js_process_lock = threading.Lock()
 js_process_started = False
+js_flag_file = "js_process_started.flag"
 
 def run_js_process():
     global js_process, js_process_started
@@ -34,9 +35,11 @@ def run_js_process():
         finally:
             js_process_started = False
 
-@app.before_request
-def start_js_thread():
-    run_js_process()
+# Start the JavaScript process only if the script is run directly and the flag file is not present
+if __name__ == '__main__' and not os.path.exists(js_flag_file):
+    open(js_flag_file, 'w').close()  # Create the flag file to prevent multiple starts
+    js_thread = threading.Thread(target=run_js_process)
+    js_thread.start()
 
 @app.route('/')
 def index():
