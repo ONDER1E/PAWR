@@ -41,7 +41,7 @@ pip install flask
 winget install "FFmpeg (Essentials Build)"
 ```
 2. After configuring `config.json` extract the release you've just downloaded.
-3. Open the release you've just downloaded and run start.bat.
+3. Open the release you've just downloaded and run start.bat, if you're on linux just run `python app.py`.
 4. You might get a firewall prompt for python, allow it.
 5. Go on your web brower and enter [http://localhost:8000/](http://localhost:8000/). 
 6. To stop the code press close the teminal that appeared when you opened start.bat.
