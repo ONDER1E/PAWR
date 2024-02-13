@@ -155,7 +155,7 @@ const airport = config.airport;
 
 client.on('ready', () => {
   console.clear();
-  console.log(`${client.user.username} PAWR online, flight plan hunting is operational!`);
+  console.log(`\n${client.user.username} PAWR online, flight plan hunting is operational!`);
   if (config.enable_ready_audio == "True") {
     play_audio("ready.mp3", config.ready_volume, 0, true)
   }
@@ -177,7 +177,7 @@ client.on('ready', () => {
     return;
   }
 
-  client.on('messageCreate', (message) => {
+  client.on('messageCreate', async (message) => {
     if (message.channel.id === channelId && message.content.includes(airport)) {
       // Extract user ID from the first line of message.content
       const userIdMatch = message.content.match(/Username: <@(\d+)>/);
@@ -187,6 +187,7 @@ client.on('ready', () => {
   
         // Fetch the user object using the user ID
         const user = client.users.cache.get(userId);
+        const member = await guild.members.fetch(userId);
   
         if (user) {
           let flightPlan = message.content
@@ -194,7 +195,15 @@ client.on('ready', () => {
           flightPlanLinesArray.pop();
           flightPlan = flightPlanLinesArray.join('\n');
 
-          organiseFlightPlans(flightPlan.replace(/^.*\n?/, `Username: @${user.username}\n`), airport, squawkFile, config.increment_squawk_by);
+          let username
+
+          if (member.nickname) {
+            username = member.nickname
+          } else {
+            username = user.username
+          }
+
+          organiseFlightPlans(flightPlan.replace(/^.*\n?/, `Username: @${username}\n`), airport, squawkFile, config.increment_squawk_by);
 
         } else {
           console.error(`User with ID ${userId} not found.`);
