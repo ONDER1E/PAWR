@@ -156,7 +156,7 @@ const airport = config.airport;
 client.on('ready', () => {
   console.clear();
   console.log(`\n${client.user.username} PAWR online, flight plan hunting is operational!`);
-  console.log("Go to http://localhost:8000")
+  console.log(`Go to http://localhost:${config.port}`)
   if (config.enable_ready_audio == "True") {
     play_audio("ready.mp3", config.ready_volume, 0, true)
   }
