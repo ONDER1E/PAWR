@@ -34,18 +34,13 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 6. Set `"default_runway"` to the runway you're normally gonna use for departures
 
 ## Instructions for use:
-1. If you haven't already install the **latest release from this repo** ( bottom right of your screen ), **vscode**, **node.js**, **python** and the following dependencies using cmd:
+1. If you haven't already install the **latest release from this repo** ( bottom right of your screen ), **node.js**, **python** and the following dependencies using cmd:
 ```js
 npm i discord.js-selfbot-v13
 winget install "FFmpeg (Essentials Build)"
 ```
 2. After configuring `config.json` extract the release you've just downloaded.
-3. Open `vscode` then open folder by pressing `ctrl+k+o` then navigate to a folder that contains `"main.js"` from the release you've just downloaded.
-4. Press `F5` to run `main.js`, now the code is running.
-5. View `Departure.yaml` and `Arrival.yaml` in vscode to see a **live update of flight plans** coming to and from your airport.
-6. To stop the code press the red square at the top of vscode
-
-7. To delete a flight plan run the script using `F5` if you haven't already and navigate to the terminal tab at the bottom then run this command:
-```py
-python rm
-```
+3. Open the release you've just downloaded and run start.bat.
+4. You might get a firewall prompt for python, allow it.
+5. Go on your web brower and enter [http://](http://localhost:8000/). 
+6. To stop the code press close the two teminals that open when you opened start.bat.
