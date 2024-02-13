@@ -48,4 +48,4 @@ python app.py
 ```
 4. You might get a firewall prompt for python, allow it.
 5. Go on your web brower and enter [http://localhost:8000/](http://localhost:8000/). 
-6. To stop the code press close the teminal that appeared when you opened start.bat.
+6. To stop the code close the teminal that appeared when you opened start.bat.
