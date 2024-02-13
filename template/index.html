@@ -71,13 +71,19 @@
     <script>
         $(document).ready(function () {
             // Function to update content
+            var previousDeparturesContent = '';
+            var previousArrivalsContent = '';
+
             function updateContent(on_del = false) {
                 $.ajax({
                     url: 'Departure.yaml',
                     cache: false,
                     success: function (data) {
-                        $('#departuresContent').text(data);
-                        createButtons('departuresContent');
+                        if (data !== previousDeparturesContent) {
+                            $('#departuresContent').text(data);
+                            createButtons('departuresContent');
+                            previousDeparturesContent = data;
+                        }
                     }
                 });
 
@@ -85,8 +91,11 @@
                     url: 'Arrival.yaml',
                     cache: false,
                     success: function (data) {
-                        $('#arrivalsContent').text(data);
-                        createButtons('arrivalsContent');
+                        if (data !== previousArrivalsContent) {
+                            $('#arrivalsContent').text(data);
+                            createButtons('arrivalsContent');
+                            previousArrivalsContent = data;
+                        }
                     }
                 });
 
@@ -95,6 +104,7 @@
                     setTimeout(updateContent, 500); // Update every 500 milliseconds
                 }
             }
+
 
             // Function to create delete buttons
             function createButtons(containerId) {
