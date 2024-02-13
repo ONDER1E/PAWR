@@ -37,6 +37,7 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 1. If you haven't already install the **latest release from this repo** ( bottom right of your screen ), **node.js**, **python** and the following dependencies using cmd:
 ```js
 npm i discord.js-selfbot-v13
+pip i flask
 winget install "FFmpeg (Essentials Build)"
 ```
 2. After configuring `config.json` extract the release you've just downloaded.
