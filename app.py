@@ -5,6 +5,19 @@ from flask import Flask, render_template, send_from_directory, request
 import subprocess
 import logging
 import threading
+import json
+
+# Read JSON data from the file
+with open("config.json", 'r') as file:
+    data_dict = json.load(file)
+
+# Convert the dictionary to an object with attributes
+class JsonObject:
+    def __init__(self, data):
+        self.__dict__ = data
+
+# Create an instance of JsonObject
+config = JsonObject(data_dict)
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
@@ -25,7 +38,7 @@ def run_js_process():
         try:
             js_process = subprocess.Popen(['node', 'main.js'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             js_process_started = True
-
+            
             for line in js_process.stdout:
                 print(f"{line.rstrip()}")
 
@@ -59,4 +72,4 @@ def run_program():
         return f'Error: {str(e)}'
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=config.port)
