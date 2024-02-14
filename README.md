@@ -43,7 +43,6 @@ winget install "FFmpeg (Essentials Build)"
 2. After configuring `config.json` extract the release you've just downloaded.
 3. Open the release you've just downloaded and run start.bat, if you're on linux just run:
 ```bash
-rm js_process_started.flag
 python app.py
 ```
 4. You might get a firewall prompt for python, allow it.
