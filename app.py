@@ -6,6 +6,8 @@ import subprocess
 import logging
 import threading
 import json
+import platform
+import signal
 
 # Read JSON data from the file
 with open("config.json", 'r') as file:
@@ -51,7 +53,9 @@ def run_js_process():
 # Start the JavaScript process only if the script is run directly and the flag file is not present
 if __name__ == '__main__' and not os.path.exists(js_flag_file):
     open(js_flag_file, 'w').close()  # Create the flag file to prevent multiple starts
+    subprocess.run(['start', 'http://localhost:8000'], shell=True, check=True)
     js_thread = threading.Thread(target=run_js_process)
+    js_thread.daemon = True
     js_thread.start()
 
 @app.route('/')
@@ -62,14 +66,44 @@ def index():
 def serve_files(filename):
     return send_from_directory(os.getcwd(), filename)
 
-@app.route('/', methods=['POST'])
-def run_program():
+@app.route('/delete', methods=['POST'])
+def delete():
     callsign = request.form['callsign']
     try:
         subprocess.run(['python', 'rm.py', callsign], check=True)
-        return 'Program executed successfully!'
+        return f'Flight plan {callsign} deleted successfully!'
     except Exception as e:
         return f'Error: {str(e)}'
+    
+@app.route('/edit', methods=['POST'])
+def edit():
+    edit_data = request.form['edit_data']
+
+    try:
+        with open('Departure.yaml', 'w', encoding='utf-8', newline='\n') as file:
+            file.write("-----------------------------------\nDeparting\n-----------------------------------\n" + edit_data)
+
+        return 'Edit successful!'
+    except Exception as e:
+        return f'Error: {str(e)}'
+    
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    verify = request.form['shutdown']
+
+    if verify == "true":
+        try:
+            current_os = platform.system()
+            if current_os == 'Windows':
+                subprocess.run(['start', 'stop.vbs'], shell=True, check=True)
+                subprocess.run(['taskkill', '/F', '/PID', os.getpid()], shell=True, check=True)
+            elif current_os == 'Linux':
+                return "Shutdown is only supported on windows. Just spam ctrl+c on the terminal you're running it on."
+            return 'shutting down'
+        except Exception as e:
+            return f'Error: {str(e)}'
+    
+    return 'Invalid shutdown request.'
 
 if __name__ == '__main__':
     app.run(debug=True, port=config.port)
