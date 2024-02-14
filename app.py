@@ -7,9 +7,6 @@ import logging
 import threading
 import json
 
-if os.path.exists("js_process_started.flag"):
-  os.remove("js_process_started.flag")
-
 # Read JSON data from the file
 with open("config.json", 'r') as file:
     data_dict = json.load(file)
