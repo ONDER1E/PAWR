@@ -16,6 +16,36 @@ if (config.renew_squawk_on_startup == "True") {
   saveCurrentSquawk(squawkFile, 1200);
 }
 
+function operateOnList(operation, arg2, arg3) {
+  if (operation === 'write') {
+    // Write operation
+    arg3 = `cache_${arg3}`; // Add "cache_" to the start of the filename for writing
+    const listString = arg2.join('|||'); // Use a unique separator
+    fs.writeFileSync(arg3, listString);
+  } else if (operation === 'read') {
+    // Read operation
+    arg2 = `cache_${arg2}`; // Add "cache_" to the start of the filename for reading
+    try {
+      const data = fs.readFileSync(arg2, 'utf-8');
+      if (data.trim() === '') {
+        return []; // Return an empty list if the file is empty
+      }
+      const list = data.split('|||'); // Split by the unique separator
+      return list;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        return []; // Return an empty list if the file is not found
+      } else {
+        console.error(`Error reading file ${arg2}:`, error.message);
+        return [];
+      }
+    }
+  } else {
+    console.error('Invalid operation type. Please use "read" or "write".');
+    return [];
+  }
+}
+
 function play_audio(audioFile, volume, start_at = 0, kill_prev = false) {
   if(config.enable_audio == "True") {
     let command = `ffplay -autoexit -nodisp -loglevel panic -ss ${start_at} -af "volume=${volume}" "${audioFile}"`;
@@ -83,6 +113,12 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy)
 
     // Read existing content from the output file
     let outputContent = fs.readFileSync(outputFileName, 'utf-8');
+    let cache_history = operateOnList("read", outputFileName)
+    cache_history.push(outputContent)
+    if (cache_history.length > 20) {
+      cache_history.shift()
+    }
+    operateOnList("write", cache_history, outputFileName)
     // Get and update the Squawk Code from the file
     const currentSquawk = getCurrentSquawk(squawkFile);
     const squawkCode = getUpdatedSquawkCode(flightPlan, currentSquawk, incrementSquawkBy);

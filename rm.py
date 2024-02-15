@@ -1,8 +1,37 @@
 import sys
 
+def operate_on_list(operation, arg2, arg3=None):
+    if operation == 'write':
+        # Write operation
+        arg3 = f'cache_{arg3}'  # Add "cache_" to the start of the filename for writing
+        with open(arg3, 'w') as file:
+            file.write('|||'.join(arg2))  # Use a unique separator
+    elif operation == 'read':
+        # Read operation
+        arg2 = f'cache_{arg2}'  # Add "cache_" to the start of the filename for reading
+        try:
+            with open(arg2, 'r') as file:
+                list_data = file.read()
+                if list_data.strip() == '':
+                    return []  # Return an empty list if the file is empty
+                my_list = list_data.split('|||')  # Split by the unique separator
+                return my_list
+        except FileNotFoundError:
+            return []  # Return an empty list if the file is not found
+    else:
+        print('Invalid operation type. Please use "read" or "write."')
+        return []
+
+
 def delete_flight_plan(file_path, callsign):
     with open(file_path, 'r', encoding='utf-8', newline='\n') as file:
         content = file.read()
+    cache = operate_on_list("read", file_path)
+    cache.append(content)
+    if len(cache) > 20:
+      cache.pop(0)
+    
+    operate_on_list("write", cache, file_path)
 
     if callsign in content:
         lines = content.split('\n')

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flight Management</title>
+    <title>PAWR</title>
+    <link rel="icon" href="favicon.png">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
         body {
@@ -22,10 +23,25 @@
         pre {
             border: 1px solid #ddd;
             padding: 10px;
+            z-index: 2;
             margin-bottom: 20px;
             background-color: #222; /* Dark background for pre */
             color: #fff; /* White text for pre */
             overflow: auto;
+            position: relative;
+        }
+
+        #notification {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 15px;
+            border-radius: 5px;
+            display: none;
         }
 
         pre.white-mode {
@@ -101,6 +117,7 @@
             padding: 10px;
             cursor: pointer;
             border-radius: 4px;
+            z-index: 9;
         }
         #shutdownButton {
             position: fixed;
@@ -112,17 +129,18 @@
             padding: 10px;
             cursor: pointer;
             border-radius: 4px;
+            z-index: 9;
         }
-        #notification {
-            position: fixed;
-            top: 0;
-            right: 0;
-            background-color: #4CAF50;
+        #undo_button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #727272;
             color: white;
-            padding: 10px;
-            margin: 15px;
-            border-radius: 5px;
-            display: none;
+            border: none;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -159,8 +177,8 @@
                     success: function (data) {
                         if (data !== previousArrivalsContent || force == true) {
                             $('#arrivalsContent').text(data);
-                            createButtons('arrivalsContent');
                             previousArrivalsContent = data;
+                            createButtons('arrivalsContent');
                         }
                     }
                 });
@@ -177,6 +195,35 @@
                 const lines = container.text().split('\n');
 
                 container.empty(); // Clear existing content before updating
+
+                let destination
+                if (containerId == "departuresContent") {
+                    destination = 'Departure.yaml'
+                } else if (containerId == "arrivalsContent") {
+                    destination = 'Arrival.yaml'
+                } else {
+                    console.log("A serious error has occured, you're finished.")
+                }
+
+                const Undo_button = $('<button id="undo_button">Undo</button>');
+
+                Undo_button.on('click', function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/go_back',
+                        data: { file_name: destination},
+                        success: function(response) {
+                            // Handle success if needed
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            // Handle error if needed
+                            console.error(error);
+                        }
+                    });
+                });
+
+                container.append(Undo_button)
 
                 lines.forEach(line => {
                     if (line.includes('Callsign: ')) {
@@ -202,11 +249,7 @@
                             });
                         });
                         
-                        if (containerId == "departuresContent") {
-                            container.append(line + ' ').append(button).append(' ').append(Edit_button).append('<br>');
-                        } else {
-                            container.append(line + ' ').append(button).append('<br>');
-                        }
+                        container.append(line + ' ').append(button).append(' ').append(Edit_button).append('<br>');
 
                         Edit_button.on('click', async function () {
                             updateContent(true, true)
@@ -227,7 +270,7 @@
                             async function fetchData() {
                                 return new Promise(resolve => {
                                     $.ajax({
-                                        url: 'Departure.yaml',
+                                        url: destination,
                                         cache: false,
                                         success: function (data) {
                                             sections = data.split('\n\n');
@@ -253,7 +296,7 @@
                             // Disable the scrollbar
                             textarea.css('overflow', 'visible');
                             textarea.css('height', 200);
-                            textarea.css('width', $("#departuresContent").width()-30);
+                            textarea.css('width', $(`#${destination}`).width()-30);
 
                             // Create a submit button
                             const submitEditButton = $('<br><button id="green">Submit</button>');
@@ -266,7 +309,7 @@
                                 $.ajax({
                                     type: 'POST',
                                     url: '/edit',
-                                    data: { edit_data:  sections.join("\n\n")},
+                                    data: { edit_data:  sections.join("\n\n"), file_name: destination},
                                     success: function(response) {
                                         // Handle success if needed
                                         console.log(response);

@@ -30,6 +30,28 @@ js_process_lock = threading.Lock()
 js_process_started = False
 js_flag_file = "js_process_started.flag"
 
+def operate_on_list(operation, arg2, arg3=None):
+    if operation == 'write':
+        # Write operation
+        arg3 = f'cache_{arg3}'  # Add "cache_" to the start of the filename for writing
+        with open(arg3, 'w') as file:
+            file.write('|||'.join(arg2))  # Use a unique separator
+    elif operation == 'read':
+        # Read operation
+        arg2 = f'cache_{arg2}'  # Add "cache_" to the start of the filename for reading
+        try:
+            with open(arg2, 'r') as file:
+                list_data = file.read()
+                if list_data.strip() == '':
+                    return []  # Return an empty list if the file is empty
+                my_list = list_data.split('|||')  # Split by the unique separator
+                return my_list
+        except FileNotFoundError:
+            return []  # Return an empty list if the file is not found
+    else:
+        print('Invalid operation type. Please use "read" or "write."')
+        return []
+
 def run_js_process():
     global js_process, js_process_started
 
@@ -78,12 +100,48 @@ def delete():
 @app.route('/edit', methods=['POST'])
 def edit():
     edit_data = request.form['edit_data']
+    file_name = request.form['file_name']
 
     try:
-        with open('Departure.yaml', 'w', encoding='utf-8', newline='\n') as file:
-            file.write("-----------------------------------\nDeparting\n-----------------------------------\n" + edit_data)
+        cache = operate_on_list("read", file_name)
+        cache.append(edit_data)
+        if len(cache) > 20:
+            cache.pop(0)
+        operate_on_list("write", cache, file_name)
+        starter = ""
+        if file_name == 'Departure.yaml':
+            starter = "-----------------------------------\nDeparting\n-----------------------------------\n"
+        elif file_name == 'Arrival.yaml':
+            starter = "-----------------------------------\nArriving\n-----------------------------------\n"
+        with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
+            file.write(starter + edit_data)
 
         return 'Edit successful!'
+    except Exception as e:
+        return f'Error: {str(e)}'
+    
+@app.route('/go_back', methods=['POST'])
+def go_back():
+    file_name = request.form['file_name']
+    try:
+        global result
+        global output
+        with open(file_name, 'r', encoding='utf-8', newline='\n') as file:
+            current = file.read()
+            result = None
+            cache = operate_on_list("read", file_name)
+            for index, version in enumerate(cache):
+                if version == current:
+                    result = index
+                    break
+            if result is not None and result > 0:
+                output = cache[result-1]
+            else:
+                output = cache[len(cache) - 1]
+        with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
+            if output is not None and output != "":
+                file.write(output)
+        return 'Undo successful!'
     except Exception as e:
         return f'Error: {str(e)}'
     
