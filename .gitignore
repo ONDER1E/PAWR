@@ -7,7 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-vscode/*
+.vscode/
 __pycache__/
 test/
 js_process_started.flag
