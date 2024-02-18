@@ -8,6 +8,28 @@ import threading
 import json
 import platform
 import signal
+import sys
+
+#file_reset_list = ["cache_Departure.yaml", "cache_Arrival.yaml", "Arrival.yaml", "Departure.yaml"]
+file_delete_list = ["js_process_started.flag"]
+
+def reset_file(file_reset_list):
+    for file in file_reset_list:
+        with open(file, 'w', encoding='utf-8', newline='\n') as file:
+            file.write("")
+    print("Enviornment cleaned.")
+
+def delete():
+    for file in file_delete_list:
+        if os.path.exists(file):
+            os.remove(file)
+    print("Enviornment cleaned.")
+
+def clean_all():
+    file_reset_list = ["cache_Departure.yaml", "cache_Arrival.yaml", "Arrival.yaml", "Departure.yaml"]
+    reset(file_reset_list)
+    delete()
+    print("Enviornment cleaned.")
 
 # Read JSON data from the file
 with open("config.json", 'r') as file:
@@ -145,6 +167,27 @@ def go_back():
     except Exception as e:
         return f'Error: {str(e)}'
     
+@app.route('/reset', methods=['POST'])
+def reset():
+    response = request.form['args']
+    args = response.split(" ")
+    if args != "clean_all":
+        operation = args[0]
+        if operation == "delete":
+            delete()
+        elif operation == "reset":
+            file_reset_list = args[1]
+            reset_file(file_reset_list)
+    else:
+        print("Cleaning all.")
+        clean_all()
+
+@app.route('/settings')
+def settings():
+
+    return render_template('settings.html')
+    
+    
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
     verify = request.form['shutdown']
@@ -155,9 +198,9 @@ def shutdown():
             if current_os == 'Windows':
                 subprocess.run(['start', 'stop.vbs'], shell=True, check=True)
                 subprocess.run(['taskkill', '/F', '/PID', os.getpid()], shell=True, check=True)
+                return 'shutting down'
             elif current_os == 'Linux':
                 return "Shutdown is only supported on windows. Just spam ctrl+c on the terminal you're running it on."
-            return 'shutting down'
         except Exception as e:
             return f'Error: {str(e)}'
     

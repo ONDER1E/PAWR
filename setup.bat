@@ -8,12 +8,6 @@ if not "%1"=="install_ffmpeg" (
 set "chocoInstalled="
 where choco >nul 2>nul
 if %errorlevel% equ 0 (
-    set "chocoInstalled=true"
-) else (
-    set "chocoInstalled=false"
-)
-
-if "%chocoInstalled%"=="true" (
     goto install_ffmpeg
 ) else (
     goto install_choco
@@ -69,7 +63,7 @@ where node >nul 2>nul
 if %errorlevel% equ 0 (
     echo Node.js is installed.
 ) else (
-    echo Node.js is not installed.
+    echo Node.js is not installed, you can get it from here https://nodejs.org/en/download/current.
     pause
     exit
 )
@@ -89,5 +83,5 @@ endlocal
 :install_discord
 npm i discord.js-selfbot-v13
 cls
-echo Setup Complete
+echo Setup Complete.
 pause

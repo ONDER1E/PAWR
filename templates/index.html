@@ -119,11 +119,11 @@
             border-radius: 4px;
             z-index: 9;
         }
-        #shutdownButton {
+        #settingsButton {
             position: fixed;
             bottom: 20px;
             right: 150px;
-            background-color: rgb(187, 19, 19);
+            background-color: #727272;
             color: white;
             border: none;
             padding: 10px;
@@ -160,7 +160,7 @@
     <pre id="arrivalsContent"></pre>
 
     <button id="darkModeButton" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-    <button id="shutdownButton" onclick="shutdown()">Shutdown</button>
+    <button id="settingsButton" onclick="settings()">settings</button>
 
     <script>
         $(document).ready(function () {
@@ -368,21 +368,8 @@
             $('pre').toggleClass('white-mode');
         }
 
-        function shutdown() {
-            $.ajax({
-                type: 'POST',
-                url: '/shutdown',
-                data: { shutdown: "true" },
-                success: function(response) {
-                    // Handle success if needed
-                    console.log(response);
-                    close();
-                },
-                error: function(error) {
-                    // Handle error if needed
-                    console.error(error);
-                }
-            });
+        function settings() {
+            window.location.replace("settings");
         }
 
         function showNotification(message) {

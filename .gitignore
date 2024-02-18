@@ -8,7 +8,6 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 .vscode/
-config.json
 __pycache__/
 test/
 js_process_started.flag
@@ -17,6 +16,7 @@ Departure.yaml
 cache_Arrival.yaml
 cache_Departure.yaml
 script.js
+current_squawk
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
