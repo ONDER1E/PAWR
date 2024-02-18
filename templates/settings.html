@@ -165,7 +165,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/reset',
-                    data: { args: "reset Arrival.yaml   " },
+                    data: { args: "reset Arrival.yaml" },
                     success: function(response) {
                         // Handle success if needed
                         console.log(response);
@@ -245,8 +245,26 @@
                 });
             });
             
-            const buttonList = [shutdownButton, resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton, resetAll]
-            buttonList.forEach(button => {
+            const buttonList = [resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton, resetAll]
+            const argsList = ["reset Arrival.yaml", "reset Departure.yaml", "reset cache_Arrival.yaml", "reset cache_Departure.yaml", "clean_all"]
+            container.append(shutdownButton)
+            container.append(br)
+            buttonList.forEach((button, index) => {
+                button.on('click', function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/reset',
+                        data: { args:  argsList[index]},
+                        success: function(response) {
+                            // Handle success if needed
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            // Handle error if needed
+                            console.error(error);
+                        }
+                    });
+                });
                 container.append(button)
                 container.append(br)
             })
