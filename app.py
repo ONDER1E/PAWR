@@ -164,9 +164,7 @@ def reset():
 
 @app.route('/settings')
 def settings():
-
     return render_template('settings.html')
-    
     
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
