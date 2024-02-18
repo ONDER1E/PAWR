@@ -7,29 +7,7 @@ import logging
 import threading
 import json
 import platform
-import signal
-import sys
-
-#file_reset_list = ["cache_Departure.yaml", "cache_Arrival.yaml", "Arrival.yaml", "Departure.yaml"]
-file_delete_list = ["js_process_started.flag"]
-
-def reset_file(file_reset_list):
-    for file in file_reset_list:
-        with open(file, 'w', encoding='utf-8', newline='\n') as file:
-            file.write("")
-    print("Enviornment cleaned.")
-
-def delete():
-    for file in file_delete_list:
-        if os.path.exists(file):
-            os.remove(file)
-    print("Enviornment cleaned.")
-
-def clean_all():
-    file_reset_list = ["cache_Departure.yaml", "cache_Arrival.yaml", "Arrival.yaml", "Departure.yaml"]
-    reset(file_reset_list)
-    delete()
-    print("Enviornment cleaned.")
+import clean
 
 # Read JSON data from the file
 with open("config.json", 'r') as file:
@@ -171,16 +149,18 @@ def go_back():
 def reset():
     response = request.form['args']
     args = response.split(" ")
-    if args != "clean_all":
+    if response != "clean_all":
         operation = args[0]
         if operation == "delete":
-            delete()
+            clean.delete_file()
+            return 'Reset successful.'
         elif operation == "reset":
-            file_reset_list = args[1]
-            reset_file(file_reset_list)
+            file = args[1]
+            clean.reset_file(file)
+            return 'Reset successful.'
     else:
-        print("Cleaning all.")
-        clean_all()
+        clean.clean_all()
+        return 'Full reset successful.'
 
 @app.route('/settings')
 def settings():

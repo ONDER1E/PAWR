@@ -165,7 +165,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/reset',
-                    data: { args: "reset ['Arrival.yaml']" },
+                    data: { args: "reset Arrival.yaml   " },
                     success: function(response) {
                         // Handle success if needed
                         console.log(response);
@@ -182,7 +182,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/reset',
-                    data: { args: "reset ['Departure.yaml']" },
+                    data: { args: "reset Departure.yaml" },
                     success: function(response) {
                         // Handle success if needed
                         console.log(response);
@@ -199,7 +199,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/reset',
-                    data: { args: "reset ['cache_Arrival.yaml']" },
+                    data: { args: "reset cache_Arrival.yaml" },
                     success: function(response) {
                         // Handle success if needed
                         console.log(response);
@@ -216,7 +216,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/reset',
-                    data: { args: "reset ['cache_Departure.yaml']" },
+                    data: { args: "reset cache_Departure.yaml" },
                     success: function(response) {
                         // Handle success if needed
                         console.log(response);
@@ -245,7 +245,7 @@
                 });
             });
             
-            const buttonList = [shutdownButton, resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton]
+            const buttonList = [shutdownButton, resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton, resetAll]
             buttonList.forEach(button => {
                 container.append(button)
                 container.append(br)
