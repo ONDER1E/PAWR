@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAWR - settings</title>
+    <link rel="icon" href="favicon.png">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000; /* Light background by default */
+            color: #fff; /* Black text by default */
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for dark mode */
+        }
+
+        body.white-mode {
+            background-color: #fff; /* Dark background in dark mode */
+            color: #000; /* White text in dark mode */
+        }
+
+        pre {
+            border: 1px solid #ddd;
+            padding: 10px;
+            z-index: 2;
+            margin-bottom: 20px;
+            background-color: #222; /* Dark background for pre */
+            color: #fff; /* White text for pre */
+            overflow: auto;
+            position: relative;
+        }
+
+        #notification {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        pre.white-mode {
+            border: 1px solid #000;
+            background-color: #ddd; /* White background for pre */
+            color: #000; /* White text for pre */
+        }
+
+        #green {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #red {
+            background-color: rgb(187, 19, 19);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #grey {
+            background-color: #727272;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Dark mode button */
+        #darkModeButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 9;
+        }
+        #shutdownButton {
+            background-color: rgb(187, 19, 19);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 9;
+        }
+        #backButton {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            background-color: #727272;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 9;
+        }
+    </style>
+</head>
+<body>
+    <div id="notification"></div>
+    <pre id="options"></pre>
+
+    <button id="darkModeButton" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <button id="backButton" onclick="back()">back</button>
+
+    <script>
+        $(document).ready(function () {
+            const container = $(`#options`);
+            const shutdownButton = $('<button id="shutdownButton" onclick="shutdown()">Shutdown</button>');
+            const resetArrivalsButton = $('<button id="grey" >Reset Arrivals</button>');
+            const resetDeparturesButton = $('<button id="grey" >Reset Departures</button>');
+            const resetArrivalsHistoryButton = $('<button id="grey" >Reset Arrivals History</button>');
+            const resetDeparturesHistoryButton = $('<button id="grey" >Reset Departures History</button>');
+            const resetAll = $('<button id="grey" >Reset all</button>');
+            const br = '<br>'
+
+            resetArrivalsButton.on('click', function () {
+                // Send an AJAX request to the Flask app with the callsign
+                $.ajax({
+                    type: 'POST',
+                    url: '/reset',
+                    data: { args: "reset ['Arrival.yaml']" },
+                    success: function(response) {
+                        // Handle success if needed
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        // Handle error if needed
+                        console.error(error);
+                    }
+                });
+            });
+
+            resetDeparturesButton.on('click', function () {
+                // Send an AJAX request to the Flask app with the callsign
+                $.ajax({
+                    type: 'POST',
+                    url: '/reset',
+                    data: { args: "reset ['Departure.yaml']" },
+                    success: function(response) {
+                        // Handle success if needed
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        // Handle error if needed
+                        console.error(error);
+                    }
+                });
+            });
+
+            resetArrivalsHistoryButton.on('click', function () {
+                // Send an AJAX request to the Flask app with the callsign
+                $.ajax({
+                    type: 'POST',
+                    url: '/reset',
+                    data: { args: "reset ['cache_Arrival.yaml']" },
+                    success: function(response) {
+                        // Handle success if needed
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        // Handle error if needed
+                        console.error(error);
+                    }
+                });
+            });
+
+            resetDeparturesHistoryButton.on('click', function () {
+                // Send an AJAX request to the Flask app with the callsign
+                $.ajax({
+                    type: 'POST',
+                    url: '/reset',
+                    data: { args: "reset ['cache_Departure.yaml']" },
+                    success: function(response) {
+                        // Handle success if needed
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        // Handle error if needed
+                        console.error(error);
+                    }
+                });
+            });
+
+            resetAll.on('click', function () {
+                // Send an AJAX request to the Flask app with the callsign
+                $.ajax({
+                    type: 'POST',
+                    url: '/reset',
+                    data: { args: "clean_all" },
+                    success: function(response) {
+                        // Handle success if needed
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        // Handle error if needed
+                        console.error(error);
+                    }
+                });
+            });
+            
+            const buttonList = [shutdownButton, resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton]
+            buttonList.forEach(button => {
+                container.append(button)
+                container.append(br)
+            })
+
+        });
+
+        // Dark mode toggle function
+        function toggleDarkMode() {
+            $('body').toggleClass('white-mode');
+            $('pre').toggleClass('white-mode');
+        }
+
+        function shutdown() {
+            $.ajax({
+                type: 'POST',
+                url: '/shutdown',
+                data: { shutdown: "true" },
+                success: function(response) {
+                    // Handle success if needed
+                    console.log("Shutdown successful.");
+                },
+                error: function(error) {
+                    // Handle error if needed
+                    console.error(error);
+                }
+            });
+        }
+
+        function back() {
+            window.location.replace("/");
+        }
+
+        function showNotification(message) {
+            var notificationElement = document.getElementById('notification');
+
+            // Check if the element is found
+            if (notificationElement) {
+                notificationElement.textContent = message;
+                notificationElement.style.display = 'block';
+
+                setTimeout(function () {
+                    notificationElement.style.display = 'none';
+                }, 3000); // Display notification for 3 seconds (adjust as needed)
+            } else {
+                console.error("Element with ID 'notification' not found.");
+            }
+        }
+
+
+        // Override console.log to also show notifications
+        (function () {
+            var oldConsoleLog = console.log;
+
+            console.log = function () {
+                // Call the original console.log
+                oldConsoleLog.apply(console, arguments);
+
+                // Show notification
+                var logMessage = Array.prototype.slice.call(arguments).join(' ');
+                showNotification(logMessage);
+            };
+        })();
+
+    </script>
+</body>
+</html>
