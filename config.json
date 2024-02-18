@@ -1,0 +1,23 @@
+{
+    "airport": "IRFD",
+    "guildId": "919656909563371600",
+    "channelId": "919751812909781092",
+    "start_squawk": 1200,
+    "increment_squawk_by": 1,
+    "renew_squawk_on_startup": "True",
+    "reset_arrivals_and_departures_on_startup": "True",
+    "departure_is_with": "Me",
+    "default_runway": "36L",
+    "listen_to_departure": "True",
+    "listen_to_arrival": "True",
+    "enable_audio": "True",
+    "enable_ping_audio": "True",
+    "enable_start_audio": "False",
+    "enable_ready_audio": "False",
+    "start_volume": "0.04",
+    "ready_volume": "0.06",
+    "ping_volume": "0.02",
+    "port": 8000,
+    "token": ""
+    
+}
