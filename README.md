@@ -34,7 +34,7 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 6. Set `"default_runway"` to the runway you're normally gonna use for departures
 
 ## Instructions for use:
-1. If you haven't already install the **latest release from this repo** ( bottom right of your screen ), **node.js**, **python** and the following dependencies using cmd:
+1. I made a setup so you can **skip this step, just run `setup.bat`** but if you're on linux then install the **latest release from this repo** ( bottom right of your screen ), **node.js**, **python** and the following dependencies if you haven't already:
 ```js
 npm i discord.js-selfbot-v13
 pip install flask
