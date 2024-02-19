@@ -4,12 +4,31 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 if (config.enable_start_audio == "True") {
   play_audio("start.mp3", config.start_volume, 152)
 }
+const process = require('process');
 const { Client } = require('discord.js-selfbot-v13');
 const client = new Client();
 const squawkFile = 'current_squawk';
 if (config.reset_arrivals_and_departures_on_startup == "True") {
   fs.writeFileSync("Departure.yaml", "-----------------------------------\nDeparting\n-----------------------------------\n");
   fs.writeFileSync("Arrival.yaml", `-----------------------------------\nArriving\n${'-' .repeat(35)}`);
+}
+
+const cwd = process.cwd();
+
+const cwdFolders = cwd.split("\\")
+
+if (config.dont_delete_setup != "True") {
+  if (cwdFolders[cwdFolders.length - 1] == "src") {
+    cwdFolders.pop()
+    deleteList = ["/setup.bat", "/setup.sh"]
+    deleteList.forEach( file => {
+      filePath = cwdFolders.join("/") + file
+      if (fs.existsSync(filePath)) {
+        console.log(filePath)
+        fs.unlink(filePath, (err) => {});
+      }
+    })
+  }
 }
 
 if (config.renew_squawk_on_startup == "True") {
