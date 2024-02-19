@@ -90,13 +90,30 @@ function play_audio(audioFile, volume, start_at = 0, kill_prev = false) {
 }
 
 
-function ICAO_to_name_converter(flightPlan) {
+function ICAO_to_name_converter(flightPlan, airport=false) {
   const replaceDict = {
     'ITKO': 'Tokyo Intl.', 'IDCS': 'Saba', 'IPPH': 'Perth Intl.', 'ILKL': 'Lukla', 'IGRV': 'Grindavik', 'IZOL': 'Izlirani Intl.',
     'ISCM': 'Scampton', 'IJAF': 'Al Najaf', 'IIAB': 'McConnell AFB', 'IBAR': 'Barra', 'IHEN': 'Henstridge', 'ILAR': 'Larnaca Intl.',
     'IPAP': 'Paphos Intl.', 'IBTH': 'Saint Barthélemy', 'IUFO': 'UFO Base', 'ISAU': 'Sauthemptona', 'ISKP': 'Skopelos', 'IMLR': 'Mellor Intl.',
     'ITRC': 'Training Centre', 'IGAR': 'Air Base Garry', 'IBLT': 'Boltic Airfield', 'IRFD': 'Greater Rockford'
   };
+  const handoffFreqDict = {
+    'ITKO': 'Tokyo Control: 132.300', 'IDCS': 'Tokyo Control: 132.300', 'IPPH': 'Perth Centre: 135.250', 'ILKL': 'Perth Centre: 135.250', 'IGRV': '126.750', 'IZOL': '125.640',
+    'ISCM': '125.640', 'IJAF': '125.640', 'IIAB': 'Lazarus Centre: 126.300', 'IBAR': 'Lazarus Centre: 126.300', 'IHEN': 'Lazarus Centre: 126.300', 'ILAR': 'Lazarus Centre: 126.300',
+    'IPAP': 'Lazarus Centre: 126.300', 'IBTH': 'Sotaf Centre: 128.600', 'IUFO': 'Sotaf Centre: 128.600', 'ISAU': 'Brighton Control: 127.820', 'ISKP': '', 'IMLR': 'Chicago Centre: 124.850',
+    'ITRC': 'Chicago Centre: 124.850', 'IGAR': 'Chicago Centre: 124.850', 'IBLT': 'Chicago Centre: 124.850', 'IRFD': 'Chicago Centre: 124.850'
+  }
+
+  ICAO = flightPlan.split("\n")[4].replace("Departing: ", "")
+  console.log(ICAO)
+
+  if (flightPlan.includes(`Departing: ${airport}`)) {
+    for (const [key, value] of Object.entries(handoffFreqDict)) {
+      if (ICAO == key) {
+        flightPlan.replace("Handoff Frequency: ", "Handoff Frequency: " + value)
+      }
+    }
+  }
   
   for (const [key, value] of Object.entries(replaceDict)) {
     flightPlan = flightPlan.replace(new RegExp(`${key}`, 'g'), value);
@@ -115,7 +132,7 @@ function checkForDuplicateFP(outputContent, username, outputFileName) {
       if (line.includes(username)) {
         
         if (outputFileName == "Departure.yaml") {
-          numberOfTimes = 10
+          numberOfTimes = 11
         } else if (outputFileName == "Arrival.yaml") {
           numberOfTimes = 9
         } else {
@@ -138,6 +155,7 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
     if (config.enable_ping_audio == "True") {
       play_audio('ping.mp3', config.ping_volume)
     }
+
     flightPlan = ICAO_to_name_converter(flightPlan)
     console.log("Departure")
     const outputFileName = "Departure.yaml";
@@ -161,13 +179,13 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
 
     outputContent = checkForDuplicateFP(outputContent, username, outputFileName);
     
-    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_runway}\nDeparture is with: ${config.departure_is_with}\nSquawk Code: ${squawkCode}\n\n`
+    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_runway}\nDeparture is with: ${config.departure_is_with}\nHandoff Frequency: \nSquawk Code: ${squawkCode}\n\n`
     fs.writeFileSync(outputFileName, outputContent.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct"));
   } else if (flightPlan.includes(`Arriving: ${airport}`) && config.listen_to_arrival == "True") {
     if (config.enable_ping_audio == "True") {
       play_audio('ping.mp3', config.ping_volume)
     }
-    flightPlan = ICAO_to_name_converter(flightPlan)
+    flightPlan = ICAO_to_name_converter(flightPlan, airport)
     console.log("Arrival")
     const outputFileName = "Arrival.yaml";
     let outputContent = fs.readFileSync(outputFileName, 'utf-8');
