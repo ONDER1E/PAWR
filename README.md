@@ -34,14 +34,19 @@ console.log(`%cYou now have your token in the clipboard!`, 'font-size: 16px');
 6. Set `"default_runway"` to the runway you're normally gonna use for departures
 
 ## Instructions for use:
-1. I made a setup so you can **skip this step, just run `setup.bat`** but if you're on linux then install the **latest release from this repo** ( bottom right of your screen ), **node.js**, **python** and the following dependencies if you haven't already:
+1. I made a setup so you can **skip this step, just run `setup.bat` or `setup.sh` if you're on linux** but if you dont want to run the script then install  **node.js**, **python** and the following dependencies if you haven't already:
 ```js
+// ensure node.js, nvm and python is installed
 npm i discord.js-selfbot-v13
 pip install flask
+// for windows:
 winget install "FFmpeg (Essentials Build)"
+// for linux:
+sudo apt install ffmpeg
 ```
-2. After configuring `config.json` extract the release you've just downloaded.
-3. Open the release you've just downloaded and run `start.bat` if you're on windows, if you're on linux run `start.sh`
-4. You might get a firewall prompt for python, allow it.
-5. Go on your web brower and enter [http://localhost:8000/](http://localhost:8000/). 
-6. To stop the code close the teminal that appeared when you opened start.bat.
+2. Install the **latest release from this repo** ( bottom right of your screen )
+3. After configuring `config.json` extract the release you've just downloaded.
+4. Open the release you've just downloaded and run `start.bat` if you're on windows, if you're on linux run `start.sh`
+5. You might get a firewall prompt for python, allow it.
+6. Go on your web brower and enter [http://localhost:8000/](http://localhost:8000/). 
+7. To stop the code close the teminal that appeared when you opened start.bat.

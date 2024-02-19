@@ -1,6 +1,16 @@
 @echo off
 setlocal
 
+NET FILE 1>NUL 2>NUL
+if '%errorlevel%' == '0' (
+    echo Administrative privileges confirmed.
+) else (
+    echo Please run this script as an administrator.
+    echo Right-click on the script file and select "Run as administrator."
+    pause
+    exit /b 1
+)
+
 if not "%1"=="install_ffmpeg" (
     goto install_ffmpeg
 )
@@ -34,9 +44,9 @@ for /f "delims=" %%i in ('where python 2^>nul') do set "pythonInstalled=%%i"
 for /f "delims=" %%i in ('where pip 2^>nul') do set "pipInstalled=%%i"
 
 if defined pythonInstalled (
-    echo "Python is installed."
+    echo Python is installed.
 ) else (
-    echo "Python is not installed."
+    echo Error: Python is not installed.
     pause
     exit
 )
@@ -63,7 +73,7 @@ where node >nul 2>nul
 if %errorlevel% equ 0 (
     echo Node.js is installed.
 ) else (
-    echo Node.js is not installed, you can get it from here https://nodejs.org/en/download/current.
+    echo Error: Node.js is not installed, you can get it from here https://nodejs.org/en/download/current.
     pause
     exit
 )
@@ -73,7 +83,7 @@ where npm >nul 2>nul
 if %errorlevel% equ 0 (
     goto install_discord
 ) else (
-    echo npm is not installed.
+    echo Error: npm is not installed.
     pause
     exit
 )
