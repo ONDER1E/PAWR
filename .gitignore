@@ -12,10 +12,10 @@ src/config.json
 __pycache__/
 src/test/
 src/js_process_started.flag
-#src/Arrival.yaml
-#src/Departure.yaml
-#src/cache_Arrival.yaml
-#src/cache_Departure.yaml
+src/Arrival.yaml
+src/Departure.yaml
+src/cache_Arrival.yaml
+src/cache_Departure.yaml
 src/script.js
 src/current_squawk
 
