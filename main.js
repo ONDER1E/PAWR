@@ -69,28 +69,10 @@ function play_audio(audioFile, volume, start_at = 0, kill_prev = false) {
 
 function ICAO_to_name_converter(flightPlan) {
   const replaceDict = {
-    'ITKO': 'Tokyo Intl.',
-    'IDCS': 'Saba',
-    'IPPH': 'Perth Intl.',
-    'ILKL': 'Lukla',
-    'IGRV': 'Grindavik',
-    'IZOL': 'Izlirani Intl.',
-    'ISCM': 'Scampton',
-    'IJAF': 'Al Najaf',
-    'IIAB': 'McConnell AFB',
-    'IBAR': 'Barra',
-    'IHEN': 'Henstridge',
-    'ILAR': 'Larnaca Intl.',
-    'IPAP': 'Paphos Intl.',
-    'IBTH': 'Saint Barthélemy',
-    'IUFO': 'UFO Base',
-    'ISAU': 'Sauthemptona',
-    'ISKP': 'Skopelos',
-    'IMLR': 'Mellor Intl.',
-    'ITRC': 'Training Centre',
-    'IGAR': 'Air Base Garry',
-    'IBLT': 'Boltic Airfield',
-    'IRFD': 'Greater Rockford'
+    'ITKO': 'Tokyo Intl.', 'IDCS': 'Saba', 'IPPH': 'Perth Intl.', 'ILKL': 'Lukla', 'IGRV': 'Grindavik', 'IZOL': 'Izlirani Intl.',
+    'ISCM': 'Scampton', 'IJAF': 'Al Najaf', 'IIAB': 'McConnell AFB', 'IBAR': 'Barra', 'IHEN': 'Henstridge', 'ILAR': 'Larnaca Intl.',
+    'IPAP': 'Paphos Intl.', 'IBTH': 'Saint Barthélemy', 'IUFO': 'UFO Base', 'ISAU': 'Sauthemptona', 'ISKP': 'Skopelos', 'IMLR': 'Mellor Intl.',
+    'ITRC': 'Training Centre', 'IGAR': 'Air Base Garry', 'IBLT': 'Boltic Airfield', 'IRFD': 'Greater Rockford'
   };
   
   for (const [key, value] of Object.entries(replaceDict)) {
