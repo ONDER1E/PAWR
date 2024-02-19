@@ -8,16 +8,16 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 .vscode/
-config.json
+src/config.json
 __pycache__/
-test/
-js_process_started.flag
-Arrival.yaml
-Departure.yaml
-cache_Arrival.yaml
-cache_Departure.yaml
-script.js
-current_squawk
+src/test/
+src/js_process_started.flag
+src/Arrival.yaml
+src/Departure.yaml
+src/cache_Arrival.yaml
+src/cache_Departure.yaml
+src/script.js
+src/current_squawk
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

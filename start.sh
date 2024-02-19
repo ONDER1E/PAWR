@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rm js_process_started.flag
-python app.py
+cd src
+bash start.sh
