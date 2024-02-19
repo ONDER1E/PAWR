@@ -31,6 +31,10 @@ if (config.dont_delete_setup != "True") {
   }
 }
 
+if (!fs.existsSync(squawkFile)) {
+  fs.writeFileSync(squawkFile, "");
+}
+
 if (config.renew_squawk_on_startup == "True") {
   saveCurrentSquawk(squawkFile, 1200);
 }
