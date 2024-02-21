@@ -6,6 +6,7 @@ if (config.enable_start_audio == "True") {
 }
 const process = require('process');
 const { Client } = require('discord.js-selfbot-v13');
+const getRegionsAlongPath = require("./getRegionsAlongPath.js")
 const client = new Client();
 const squawkFile = 'current_squawk';
 if (config.reset_arrivals_and_departures_on_startup == "True") {
@@ -97,23 +98,6 @@ function ICAO_to_name_converter(flightPlan, airport=false) {
     'IPAP': 'Paphos Intl.', 'IBTH': 'Saint Barthélemy', 'IUFO': 'UFO Base', 'ISAU': 'Sauthemptona', 'ISKP': 'Skopelos', 'IMLR': 'Mellor Intl.',
     'ITRC': 'Training Centre', 'IGAR': 'Air Base Garry', 'IBLT': 'Boltic Airfield', 'IRFD': 'Greater Rockford'
   };
-  const handoffFreqDict = {
-    'ITKO': 'Tokyo Control: 132.300', 'IDCS': 'Tokyo Control: 132.300', 'IPPH': 'Perth Centre: 135.250', 'ILKL': 'Perth Centre: 135.250', 'IGRV': '126.750', 'IZOL': '125.640',
-    'ISCM': '125.640', 'IJAF': '125.640', 'IIAB': 'Lazarus Centre: 126.300', 'IBAR': 'Lazarus Centre: 126.300', 'IHEN': 'Lazarus Centre: 126.300', 'ILAR': 'Lazarus Centre: 126.300',
-    'IPAP': 'Lazarus Centre: 126.300', 'IBTH': 'Sotaf Centre: 128.600', 'IUFO': 'Sotaf Centre: 128.600', 'ISAU': 'Brighton Control: 127.820', 'ISKP': '', 'IMLR': 'Chicago Centre: 124.850',
-    'ITRC': 'Chicago Centre: 124.850', 'IGAR': 'Chicago Centre: 124.850', 'IBLT': 'Chicago Centre: 124.850', 'IRFD': 'Chicago Centre: 124.850'
-  }
-
-  ICAO = flightPlan.split("\n")[4].replace("Departing: ", "")
-  console.log(ICAO)
-
-  if (flightPlan.includes(`Departing: ${airport}`)) {
-    for (const [key, value] of Object.entries(handoffFreqDict)) {
-      if (ICAO == key) {
-        flightPlan.replace("Handoff Frequency: ", "Handoff Frequency: " + value)
-      }
-    }
-  }
   
   for (const [key, value] of Object.entries(replaceDict)) {
     flightPlan = flightPlan.replace(new RegExp(`${key}`, 'g'), value);
@@ -156,6 +140,7 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
       play_audio('ping.mp3', config.ping_volume)
     }
 
+    ICAO = flightPlan.split("\n")[5].replace("Arriving: ", "")
     flightPlan = ICAO_to_name_converter(flightPlan)
     console.log("Departure")
     const outputFileName = "Departure.yaml";
@@ -178,9 +163,29 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
     }
 
     outputContent = checkForDuplicateFP(outputContent, username, outputFileName);
-    
-    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_runway}\nDeparture is with: ${config.departure_is_with}\nHandoff Frequency: \nSquawk Code: ${squawkCode}\n\n`
-    fs.writeFileSync(outputFileName, outputContent.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct"));
+
+    let regionsAlongPath = getRegionsAlongPath.getRegionsAlongPath(airport, ICAO);
+    regionsAlongPath.splice(0, 1)
+    let handoffFreq = ""
+    regionsAlongPath.forEach((region, index) => {
+      handoffFreq += region
+      if (regionsAlongPath.length-1 != index) {
+        handoffFreq += " => "
+      }
+    })
+
+    let handoffFreqTitle
+
+    if (regionsAlongPath.length > 1) {
+      handoffFreqTitle = "Handoff Frequencies: "
+    } else {
+      handoffFreqTitle = "Handoff Frequency: "
+    }
+
+    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_runway}\nDeparture is with: ${config.departure_is_with}\n${handoffFreqTitle+handoffFreq}\nSquawk Code: ${squawkCode}\n\n`.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct")
+        
+  
+    fs.writeFileSync(outputFileName, outputContent);
   } else if (flightPlan.includes(`Arriving: ${airport}`) && config.listen_to_arrival == "True") {
     if (config.enable_ping_audio == "True") {
       play_audio('ping.mp3', config.ping_volume)

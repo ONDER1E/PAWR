@@ -4,7 +4,7 @@ PAWR is a tool designed to reduce the workload of Air Traffic Controllers (ATC) 
 
 ## Configuration Instructions (config.json):
 
-1. Edit the file `config.json`.
+1. Copy and paste `config_example.json` into a new file called `config.json` and edit it with the next steps.
 2. Set "Token" to your Discord token. If you don't know your Discord token open discord in a web brower, enter developer tools ( ctrl+shit+i )  --> navigate to the console tab at the top and paste in this code (might have to **type** in 'allow pasting' prior):
 
 ```javascript

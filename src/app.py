@@ -9,19 +9,22 @@ import json
 import platform
 import clean
 
-# Read JSON data from the file
-with open("config.json", 'r') as file:
-    data_dict = json.load(file)
+token = ""
+if os.path.exists("config.json"):
+    # Read JSON data from the file
+    with open("config.json", 'r') as file:
+        data_dict = json.load(file)
 
-# Convert the dictionary to an object with attributes
-class JsonObject:
-    def __init__(self, data):
-        self.__dict__ = data
+    # Convert the dictionary to an object with attributes
+    class JsonObject:
+        def __init__(self, data):
+            self.__dict__ = data
 
-# Create an instance of JsonObject
-config = JsonObject(data_dict)
+    # Create an instance of JsonObject
+    config = JsonObject(data_dict)
+    token = config.token
 
-if config.token == "":
+if token == "":
     print("Empty token, see README.md to setup config.json")
 else:
 
@@ -105,24 +108,43 @@ else:
     def edit():
         edit_data = request.form['edit_data']
         file_name = request.form['file_name']
+        section_lines = request.form['lines']
+        global all_elements_present
+        all_elements_present = 0
+        
 
-        try:
-            cache = operate_on_list("read", file_name)
-            cache.append(edit_data)
-            if len(cache) > 20:
-                cache.pop(0)
-            operate_on_list("write", cache, file_name)
-            starter = ""
-            if file_name == 'Departure.yaml':
-                starter = "-----------------------------------\nDeparting\n-----------------------------------\n"
-            elif file_name == 'Arrival.yaml':
-                starter = "-----------------------------------\nArriving\n-----------------------------------\n"
-            with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
-                file.write(starter + edit_data)
+        edit_data_lines = edit_data.split("\n")
+        
+        valid_FP = [f'Username: {section_lines[0]}', "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", "Handoff Frequency:", "Squawk Code: "]
 
-            return 'Edit successful!'
-        except Exception as e:
-            return f'Error: {str(e)}'
+        for index, line in enumerate(edit_data_lines):
+            if index >= len(valid_FP):
+                break
+            if valid_FP[index] not in line:
+                all_elements_present += 1
+
+        print (all_elements_present)
+
+        if all_elements_present == 0:
+            try:
+                cache = operate_on_list("read", file_name)
+                cache.append(edit_data)
+                if len(cache) > 20:
+                    cache.pop(0)
+                operate_on_list("write", cache, file_name)
+                starter = ""
+                if file_name == 'Departure.yaml':
+                    starter = "-----------------------------------\nDeparting\n-----------------------------------\n"
+                elif file_name == 'Arrival.yaml':
+                    starter = "-----------------------------------\nArriving\n-----------------------------------\n"
+                with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
+                    file.write(starter + edit_data)
+
+                return 'Edit successful!'
+            except Exception as e:
+                return f'Error: {str(e)}'
+        else:
+            return 'Error: Invalid edit data'
         
     @app.route('/go_back', methods=['POST'])
     def go_back():

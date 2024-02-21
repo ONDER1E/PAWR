@@ -44,6 +44,19 @@
             display: none;
         }
 
+        #errorNotification {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9;
+            background-color: rgb(187, 19, 19);
+            color: white;
+            padding: 10px;
+            margin: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
         pre.white-mode {
             border: 1px solid #000;
             background-color: #ddd; /* White background for pre */
@@ -156,6 +169,7 @@
 </head>
 <body>
     <div id="notification"></div>
+    <div id="errorNotification"></div>
     <pre id="departuresContent"></pre>
     <pre id="arrivalsContent"></pre>
 
@@ -319,6 +333,8 @@
                             const submitEditButton = $('<br><button id="green">Submit</button>');
                             const cancelEditButton = $('<button id="red">Cancel</button>');
 
+                            let section_lines = sections[i].split("\n")
+
                             // Add a click event handler for the submit button
                             submitEditButton.on('click', function () {
                                 sections[i] = textarea.val()
@@ -326,10 +342,11 @@
                                 $.ajax({
                                     type: 'POST',
                                     url: '/edit',
-                                    data: { edit_data:  sections.join("\n\n"), file_name: destination},
+                                    data: { edit_data: sections.join("\n\n"), file_name: destination, lines: `${section_lines}`},
                                     success: function(response) {
                                         // Handle success if needed
                                         console.log(response);
+                                        updateContent(true, true);
                                     },
                                     error: function(error) {
                                         // Handle error if needed
@@ -373,12 +390,18 @@
         }
 
         function showNotification(message) {
-            var notificationElement = document.getElementById('notification');
+            var notificationElement;
+            if (message.startsWith("Error: ")) {
+                notificationElement = document.getElementById('errorNotification');
+            } else {
+                notificationElement = document.getElementById('notification');
+            }
 
             // Check if the element is found
             if (notificationElement) {
                 notificationElement.textContent = message;
                 notificationElement.style.display = 'block';
+                    
 
                 setTimeout(function () {
                     notificationElement.style.display = 'none';
