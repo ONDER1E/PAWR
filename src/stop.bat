@@ -12,4 +12,3 @@ taskkill /F /FI "windowtitle eq Administrator:  PAWR"
 taskkill /F /FI "windowtitle eq PAWR"
 taskkill /F /FI "windowtitle eq PAWR" 
 taskkill /F /FI "windowtitle eq PAWR"
-exit

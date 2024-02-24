@@ -107,27 +107,35 @@ function ICAO_to_name_converter(flightPlan, airport=false) {
 
 function checkForDuplicateFP(outputContent, username, outputFileName) {
 
-  if (outputContent.includes(username)) {
-    // If the username is found, remove lines after it until a newline
-    const lines = outputContent.split('\n');
-    let i
-    let numberOfTimes
-    lines.forEach((line, index) => {
-      if (line.includes(username)) {
-        
-        if (outputFileName == "Departure.yaml") {
-          numberOfTimes = 11
-        } else if (outputFileName == "Arrival.yaml") {
-          numberOfTimes = 9
-        } else {
-          numberOfTimes = 0
+  let outputFileNames = ["Departure.yaml", "Arrival.yaml"]
+
+  outputFileNames.forEach(outputFile => {
+    if (outputContent.includes(username)) {
+      // If the username is found, remove lines after it until a newline
+      const lines = outputContent.split('\n');
+      let i
+      let numberOfTimes
+      lines.forEach((line, index) => {
+        if (line.includes(username)) {
+          
+          if (outputFile == "Departure.yaml") {
+            numberOfTimes = 11
+          } else if (outputFile == "Arrival.yaml") {
+            numberOfTimes = 9
+          } else {
+            numberOfTimes = 0
+          }
+          i = index
         }
-        i = index
+      })
+      lines.splice(i, numberOfTimes)
+      if (outputFile == outputFileName) {
+        outputContent = lines.join("\n")
       }
-    })
-    lines.splice(i, numberOfTimes)
-    outputContent = lines.join("\n")
-  }
+    }
+  })
+
+  
   return outputContent;
 }
 

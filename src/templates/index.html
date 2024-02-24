@@ -320,6 +320,8 @@
                             await fetchData(); 
                             
                             await waitForChange(sections);
+
+                            let old_username = sections[i].split("\n")[0]
                             
                             // Create a textarea pre-filled with the "sector" variable
                             const textarea = $('<textarea>').val(sections[i]);
@@ -333,16 +335,15 @@
                             const submitEditButton = $('<br><button id="green">Submit</button>');
                             const cancelEditButton = $('<button id="red">Cancel</button>');
 
-                            let section_lines = sections[i].split("\n")
-
                             // Add a click event handler for the submit button
                             submitEditButton.on('click', function () {
+                                let verify = textarea.val()
                                 sections[i] = textarea.val()
                                 // Send an AJAX request to the Flask app with the new data
                                 $.ajax({
                                     type: 'POST',
                                     url: '/edit',
-                                    data: { edit_data: sections.join("\n\n"), file_name: destination, lines: `${section_lines}`},
+                                    data: { edit_data: sections.join("\n\n"), file_name: destination, old_username: `${old_username}`, verify: `${verify}`},
                                     success: function(response) {
                                         // Handle success if needed
                                         console.log(response);
@@ -405,7 +406,7 @@
 
                 setTimeout(function () {
                     notificationElement.style.display = 'none';
-                }, 3000); // Display notification for 3 seconds (adjust as needed)
+                }, 5000); // Display notification for 3 seconds (adjust as needed)
             } else {
                 console.error("Element with ID 'notification' not found.");
             }

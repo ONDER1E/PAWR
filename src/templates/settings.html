@@ -152,109 +152,25 @@
     <script>
         $(document).ready(function () {
             const container = $(`#options`);
-            const shutdownButton = $('<button id="shutdownButton" onclick="shutdown()">Shutdown</button>');
+            const shutdownButton = $('<button id="shutdownButton" onclick="shutdown(`-s`)">Shutdown</button>');
             const resetArrivalsButton = $('<button id="grey" >Reset Arrivals</button>');
             const resetDeparturesButton = $('<button id="grey" >Reset Departures</button>');
             const resetArrivalsHistoryButton = $('<button id="grey" >Reset Arrivals History</button>');
             const resetDeparturesHistoryButton = $('<button id="grey" >Reset Departures History</button>');
+            const clearConsole = $('<button id="grey" >Clear Terminal Console</button>');
             const resetAll = $('<button id="grey" >Reset all</button>');
             const br = '<br>'
-
-            resetArrivalsButton.on('click', function () {
-                // Send an AJAX request to the Flask app with the callsign
-                $.ajax({
-                    type: 'POST',
-                    url: '/reset',
-                    data: { args: "reset Arrival.yaml" },
-                    success: function(response) {
-                        // Handle success if needed
-                        console.log(response);
-                    },
-                    error: function(error) {
-                        // Handle error if needed
-                        console.error(error);
-                    }
-                });
-            });
-
-            resetDeparturesButton.on('click', function () {
-                // Send an AJAX request to the Flask app with the callsign
-                $.ajax({
-                    type: 'POST',
-                    url: '/reset',
-                    data: { args: "reset Departure.yaml" },
-                    success: function(response) {
-                        // Handle success if needed
-                        console.log(response);
-                    },
-                    error: function(error) {
-                        // Handle error if needed
-                        console.error(error);
-                    }
-                });
-            });
-
-            resetArrivalsHistoryButton.on('click', function () {
-                // Send an AJAX request to the Flask app with the callsign
-                $.ajax({
-                    type: 'POST',
-                    url: '/reset',
-                    data: { args: "reset cache_Arrival.yaml" },
-                    success: function(response) {
-                        // Handle success if needed
-                        console.log(response);
-                    },
-                    error: function(error) {
-                        // Handle error if needed
-                        console.error(error);
-                    }
-                });
-            });
-
-            resetDeparturesHistoryButton.on('click', function () {
-                // Send an AJAX request to the Flask app with the callsign
-                $.ajax({
-                    type: 'POST',
-                    url: '/reset',
-                    data: { args: "reset cache_Departure.yaml" },
-                    success: function(response) {
-                        // Handle success if needed
-                        console.log(response);
-                    },
-                    error: function(error) {
-                        // Handle error if needed
-                        console.error(error);
-                    }
-                });
-            });
-
-            resetAll.on('click', function () {
-                // Send an AJAX request to the Flask app with the callsign
-                $.ajax({
-                    type: 'POST',
-                    url: '/reset',
-                    data: { args: "clean_all" },
-                    success: function(response) {
-                        // Handle success if needed
-                        console.log(response);
-                    },
-                    error: function(error) {
-                        // Handle error if needed
-                        console.error(error);
-                    }
-                });
-            });
             
-            const buttonList = [resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton, resetAll]
-            const argsList = ["reset Arrival.yaml", "reset Departure.yaml", "reset cache_Arrival.yaml", "reset cache_Departure.yaml", "clean_all"]
+            const buttonList = [resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton, clearConsole, resetAll]
+            const argsList = [["reset", "Arrival.yaml"], ["reset", "Departure.yaml"], ["reset", "cache_Arrival.yaml"], ["reset", "cache_Departure.yaml"], ["clear_console", ""], ["reset", "clean_all"]]
             container.append(shutdownButton)
             container.append(br)
             buttonList.forEach((button, index) => {
                 button.on('click', function () {
                     $.ajax({
                         type: 'POST',
-                        url: '/reset',
-                        data: { args:  argsList[index]},
+                        url: `/${argsList[index][0]}`,
+                        data: { args: argsList[index][1], operation: argsList[index][0]},
                         success: function(response) {
                             // Handle success if needed
                             console.log(response);
@@ -277,17 +193,19 @@
             $('pre').toggleClass('white-mode');
         }
 
-        function shutdown() {
+        function shutdown(arg) {
             $.ajax({
                 type: 'POST',
                 url: '/shutdown',
-                data: { shutdown: "true" },
+                data: { arg: `${arg}` },
                 success: function(response) {
                     // Handle success if needed
                     console.log("Shutdown successful.");
-                    setTimeout(() => {
+                    /*setTimeout(() => {
                         window.location.replace("/");
                     }, 1000);
+                    */
+                    Window.close()
                 },
                 error: function(error) {
                     // Handle error if needed
@@ -310,7 +228,7 @@
 
                 setTimeout(function () {
                     notificationElement.style.display = 'none';
-                }, 3000); // Display notification for 3 seconds (adjust as needed)
+                }, 5000); // Display notification for 3 seconds (adjust as needed)
             } else {
                 console.error("Element with ID 'notification' not found.");
             }

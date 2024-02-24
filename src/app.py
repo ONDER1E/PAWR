@@ -41,13 +41,13 @@ else:
         if operation == 'write':
             # Write operation
             arg3 = f'cache_{arg3}'  # Add "cache_" to the start of the filename for writing
-            with open(arg3, 'w') as file:
+            with open(arg3, 'w', encoding='utf-8', newline='\n') as file:
                 file.write('|||'.join(arg2))  # Use a unique separator
         elif operation == 'read':
             # Read operation
             arg2 = f'cache_{arg2}'  # Add "cache_" to the start of the filename for reading
             try:
-                with open(arg2, 'r') as file:
+                with open(arg2, 'r', encoding='utf-8', newline='\n') as file:
                     list_data = file.read()
                     if list_data.strip() == '':
                         return []  # Return an empty list if the file is empty
@@ -108,22 +108,38 @@ else:
     def edit():
         edit_data = request.form['edit_data']
         file_name = request.form['file_name']
-        section_lines = request.form['lines']
+        old_username = request.form['old_username']
+        verify = request.form['verify']
         global all_elements_present
+        global err
         all_elements_present = 0
-        
 
-        edit_data_lines = edit_data.split("\n")
+        new_username = verify.split("\n")[0]
         
-        valid_FP = [f'Username: {section_lines[0]}', "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", "Handoff Frequency:", "Squawk Code: "]
+        valid_FP = [old_username, "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", ["Handoff Frequency:", "Handoff Frequencies: "], "Squawk Code: "]
 
-        for index, line in enumerate(edit_data_lines):
+        print(verify.split("\n"))
+        if new_username != valid_FP[0]:
+            all_elements_present += 1
+            
+            err = f'Error: Invalid data/Not allowed to change username'
+
+        for index, line in enumerate(verify.split("\n")):
             if index >= len(valid_FP):
                 break
-            if valid_FP[index] not in line:
-                all_elements_present += 1
-
-        print (all_elements_present)
+            elif index == 8:
+                if " => " in line:
+                    if not line.startswith(valid_FP[index][1]):
+                        all_elements_present += 1
+                        err = f'Error: Invalid {valid_FP[index][1][:-2]}'
+                else:
+                    if not line.startswith(valid_FP[index][0]):
+                        all_elements_present += 1
+                        err = f'Error: Invalid {valid_FP[index][0][:-2]}'
+            elif not line.startswith(valid_FP[index]):
+                if valid_FP[index] == 0:
+                    all_elements_present += 1
+                    err = f'Error: Invalid {valid_FP[index][:-2]}'
 
         if all_elements_present == 0:
             try:
@@ -137,14 +153,19 @@ else:
                     starter = "-----------------------------------\nDeparting\n-----------------------------------\n"
                 elif file_name == 'Arrival.yaml':
                     starter = "-----------------------------------\nArriving\n-----------------------------------\n"
-                with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
-                    file.write(starter + edit_data)
-
+                output = starter + edit_data
+                with open(file_name, 'r', encoding='utf-8', newline='\n') as file:
+                    old_data = file.read()
+                    if old_data != output:
+                        with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
+                            file.write(output)
+                    else:
+                        return 'Error: No changes made'
                 return 'Edit successful!'
             except Exception as e:
                 return f'Error: {str(e)}'
         else:
-            return 'Error: Invalid edit data'
+            return err
         
     @app.route('/go_back', methods=['POST'])
     def go_back():
@@ -174,16 +195,11 @@ else:
     @app.route('/reset', methods=['POST'])
     def reset():
         response = request.form['args']
-        args = response.split(" ")
+        operation = request.form['operation']
         if response != "clean_all":
-            operation = args[0]
-            if operation == "delete":
-                clean.delete_file()
-                return 'Reset successful.'
-            elif operation == "reset":
-                file = args[1]
-                clean.reset_file(file)
-                return 'Reset successful.'
+            if operation == "reset":
+                clean.reset_file(response)
+                return f'{response} reset successful.'
         else:
             clean.clean_all()
             return 'Full reset successful.'
@@ -194,21 +210,31 @@ else:
         
     @app.route('/shutdown', methods=['POST'])
     def shutdown():
-        verify = request.form['shutdown']
+        arg = request.form['arg']
 
-        if verify == "true":
-            try:
-                current_os = platform.system()
-                if current_os == 'Windows':
-                    subprocess.run(['start', 'stop.vbs'], shell=True, check=True)
-                    subprocess.run(['taskkill', '/F', '/PID', os.getpid()], shell=True, check=True)
-                    return 'shutting down'
-                elif current_os == 'Linux':
-                    return "Shutdown is only supported on windows. Just spam ctrl+c on the terminal you're running it on."
-            except Exception as e:
-                return f'Error: {str(e)}'
+        cmd = ""
+        if arg == "-r":
+            cmd = "restart.vbs"
+        elif arg == "-s":
+            cmd = "stop.vbs"
+        else:
+            return 'Invalid shutdown request.'
+        try:
+            current_os = platform.system()
+            if current_os == 'Windows':
+                subprocess.run(['start', cmd], shell=True, check=True)
+                subprocess.run(['taskkill', '/F', '/PID', os.getpid()], shell=True, check=True)
+                return 'shutting down'
+            elif current_os == 'Linux':
+                return "Shutdown is only supported on windows. Just spam ctrl+c on the terminal you're running it on."
+        except Exception as e:
+            return f'Error: {str(e)}'
+    
+    @app.route('/clear_console', methods=['POST'])
+    def clear_console():
+        clear()
         
-        return 'Invalid shutdown request.'
+        return 'Console cleared'
 
     if __name__ == '__main__':
         app.run(debug=True, port=config.port)
