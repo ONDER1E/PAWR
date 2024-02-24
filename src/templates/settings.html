@@ -201,11 +201,7 @@
                 success: function(response) {
                     // Handle success if needed
                     console.log("Shutdown successful.");
-                    /*setTimeout(() => {
-                        window.location.replace("/");
-                    }, 1000);
-                    */
-                    Window.close()
+                    close()
                 },
                 error: function(error) {
                     // Handle error if needed
