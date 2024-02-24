@@ -119,7 +119,7 @@ else:
         valid_FP = [old_username, "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", ["Handoff Frequency:", "Handoff Frequencies: "], "Squawk Code: "]
 
         print(verify.split("\n"))
-        if new_username != valid_FP[0]:
+        if new_username != valid_FP[0] or len(verify.split("\n")) > 10:
             all_elements_present += 1
             
             err = f'Error: Invalid data/Not allowed to change username'
@@ -167,6 +167,100 @@ else:
         else:
             return err
         
+    @app.route('/edit_config', methods=['POST'])
+    def edit_config():
+        edit_data = request.form['edit_data'].split("\n")
+        global all_elements_present
+        global err
+        all_elements_present = 0
+
+        def is_decimal(s):
+            try:
+                float(s)
+                return True
+            except ValueError:
+                return False
+
+        def check_data_type(edit_data, valid_line, expected_type):
+            edit_data_split = edit_data.split(" ")
+            edit_data_value = edit_data_split[len(edit_data_split)-1].replace(",", "")
+            global real_type
+            real_type = ""
+            if edit_data_value.lower() == '"true"' or edit_data_value.lower() == '"false"':
+                real_type = "bool"
+            elif edit_data_value.startswith('"') and edit_data_value.endswith('"'):
+                if edit_data_value[1:-1].isdigit() or is_decimal(edit_data_value[1:-1]):
+                    real_type = "wint"
+                else:
+                    real_type = "str"
+            elif edit_data_value.isdigit():
+                real_type = "int"
+            print(real_type + " " + expected_type)
+            if not edit_data.startswith(valid_line):
+                return [False, f'Error: Invalid data, missing {valid_line[4:-2]}']
+            elif expected_type == "":
+                return [True, ""]
+            elif real_type != expected_type:
+                return [False, f'Error: Invalid data, {valid_line[4:-2]} must be a {expected_type.replace("wint", "str wrapped int").replace("str", "string").replace("int", "integer").replace("bool", "boolean")} {edit_data_value.lower()}']
+            else:
+                return [True, ""]
+
+        valid_lines = [["{", ""], ['    "airport": ', "str"], ['    "guildId": ', "wint"], 
+                       ['    "channelId": ', "wint"], ['    "start_squawk": ', "int", ], 
+                       ['    "increment_squawk_by": ', "int"], ['    "renew_squawk_on_startup": ', "bool"], 
+                       ['    "reset_arrivals_and_departures_on_startup": ', "bool"], ['    "departure_is_with": ', "str"], 
+                       ['    "default_departure_runway": ', ""], ['    "listen_to_departure": ', "bool"], 
+                       ['    "listen_to_arrival": ', "bool"], ['    "enable_audio": ', "bool"], 
+                       ['    "enable_ping_audio": ', "bool"], ['    "enable_start_audio": ', "bool"], 
+                       ['    "enable_ready_audio": ', "bool"], ['    "start_volume": ', "wint"], 
+                       ['    "ready_volume": ', "wint"], ['    "ping_volume": ', "wint"], ['    "port": ', "int"], ['    "token": ', "str"], ["}", ""]]
+        
+        if len(edit_data) < 23 or len(edit_data) > 24:
+            all_elements_present += 1
+            err = f'Error: Invalid data, cannot exceed 24 lines or be below 23 ({len(edit_data)})'
+        
+        for index, valid_line in enumerate(valid_lines):
+            if edit_data[index] == "{" or edit_data[index] == "}" or valid_line[0] == "{" or valid_line[0] == "}":
+                pass
+            elif index == 20:
+                if edit_data[index].startswith('    "dont_delete_setup": '):
+                    check = check_data_type(edit_data[index], '    "dont_delete_setup": ', "bool")
+                    if check[0] == False:
+                        all_elements_present += 1
+                        err = check[1]
+                elif edit_data[index].startswith(valid_line[0]):
+                    check = check_data_type(edit_data[index], valid_line[0], valid_line[1])
+                    if check[0] == False:
+                        all_elements_present += 1
+                        err = check[1]
+            elif edit_data[index].startswith('    "token": '):
+                check = check_data_type(edit_data[index], '    "token": ', "str")
+                if check[0] == False:
+                    all_elements_present += 1
+                    err = check[1]
+            else:
+                check = check_data_type(edit_data[index], valid_line[0], valid_line[1])
+                if check[0] == False:
+                    all_elements_present += 1
+                    err = check[1]
+        if all_elements_present == 0:
+            output = '\n'.join(str(element) for element in edit_data)
+            with open("config.json", 'r', encoding='utf-8', newline='\n') as file:
+                old_data = file.read()
+                if old_data != output:
+                    with open("config.json", 'w', encoding='utf-8', newline='\n') as file:
+                        if output is not None and output != "":
+                            file.write(output)
+                            return 'Edit successful!'
+                        else:
+                            return 'Error: config cannot be empty'
+                else:
+                    return 'Error: No changes made'
+        else:
+            return err
+
+        
+        
     @app.route('/go_back', methods=['POST'])
     def go_back():
         file_name = request.form['file_name']
@@ -188,7 +282,9 @@ else:
             with open(file_name, 'w', encoding='utf-8', newline='\n') as file:
                 if output is not None and output != "":
                     file.write(output)
-            return 'Undo successful!'
+                    return 'Undo successful!'
+                else:
+                    return 'Error: empty cache'
         except Exception as e:
             return f'Error: {str(e)}'
         

@@ -44,6 +44,19 @@
             display: none;
         }
 
+        #errorNotification {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9;
+            background-color: rgb(187, 19, 19);
+            color: white;
+            padding: 10px;
+            margin: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
         pre.white-mode {
             border: 1px solid #000;
             background-color: #ddd; /* White background for pre */
@@ -143,6 +156,7 @@
     </style>
 </head>
 <body>
+    <div id="errorNotification"></div>
     <div id="notification"></div>
     <pre id="options"></pre>
 
@@ -151,6 +165,13 @@
 
     <script>
         $(document).ready(function () {
+            function update() {
+            function append_to_container(appedi) {
+                container.append(appedi)
+                container.append('<br>')
+            }
+
+            const containerId = 'options'
             const container = $(`#options`);
             const shutdownButton = $('<button id="shutdownButton" onclick="shutdown(`-s`)">Shutdown</button>');
             const resetArrivalsButton = $('<button id="grey" >Reset Arrivals</button>');
@@ -159,12 +180,10 @@
             const resetDeparturesHistoryButton = $('<button id="grey" >Reset Departures History</button>');
             const clearConsole = $('<button id="grey" >Clear Terminal Console</button>');
             const resetAll = $('<button id="grey" >Reset all</button>');
-            const br = '<br>'
             
             const buttonList = [resetArrivalsButton, resetDeparturesButton, resetArrivalsHistoryButton, resetDeparturesHistoryButton, clearConsole, resetAll]
             const argsList = [["reset", "Arrival.yaml"], ["reset", "Departure.yaml"], ["reset", "cache_Arrival.yaml"], ["reset", "cache_Departure.yaml"], ["clear_console", ""], ["reset", "clean_all"]]
-            container.append(shutdownButton)
-            container.append(br)
+            append_to_container(shutdownButton)
             buttonList.forEach((button, index) => {
                 button.on('click', function () {
                     $.ajax({
@@ -181,9 +200,99 @@
                         }
                     });
                 });
-                container.append(button)
-                container.append(br)
+                append_to_container(button)
             })
+
+            const Edit_button = $('<button id="grey">Edit config</button>')
+
+            append_to_container(Edit_button);
+
+            Edit_button.on('click', async function () {
+                let i
+                function waitForChange(variableToWatch) {
+                    return new Promise(resolve => {
+                        const checkCondition = () => {
+                        if (variableToWatch !== undefined) {
+                            resolve(variableToWatch);
+                        } else {
+                            setTimeout(checkCondition, 100); // Adjust the delay as needed
+                        }
+                        };
+                        checkCondition();
+                    });
+                }
+                async function fetchData() {
+                    return new Promise(resolve => {
+                        $.ajax({
+                            url: "config.json",
+                            cache: false,
+                            success: function (data) {
+                                i = JSON.stringify(data).replace("{", "{\n").replace("}", "\n}").replace(/:/g, ": ").split(",");
+                                i.forEach((line, index) => {
+                                    if (index == 0) {
+                                        i[index] = "{\n    " + line.replace("{\n", "")
+                                    } else {
+                                        i[index] = "    " + line
+                                    }
+                                })
+                                i = i.join(",\n")
+                                resolve();
+                            }
+                        });
+                    });
+                }
+
+                await fetchData(); 
+                
+                await waitForChange(i);
+                
+                // Create a textarea pre-filled with the "sector" variable
+                const textarea = $('<textarea>').val(String(i));
+
+                // Disable the scrollbar
+                textarea.css('overflow', 'visible');
+                textarea.css('height', 200);
+                textarea.css('width', $(`#${containerId}`).width()-30);
+
+                // Create a submit button
+                const submitEditButton = $('<br><button id="green">Submit</button>');
+                const cancelEditButton = $('<button id="red">Cancel</button>');
+
+                // Add a click event handler for the submit button
+                submitEditButton.on('click', function () {
+                    i = textarea.val()
+                    // Send an AJAX request to the Flask app with the new data
+                    $.ajax({
+                        type: 'POST',
+                        url: '/edit_config',
+                        data: { edit_data: i},
+                        success: function(response) {
+                            // Handle success if needed
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            // Handle error if needed
+                            console.error(error);
+                        }
+                    });
+                });
+
+                cancelEditButton.on('click', function () {
+                    $("#options").empty();
+                    update()
+                });
+
+                // Replace the Edit button with the textarea and submit button
+                $(this).replaceWith(textarea).after(submitEditButton, cancelEditButton);
+
+                // Append the textarea and submit button to the container
+                textarea.appendTo(container);
+                submitEditButton.appendTo(container);
+                cancelEditButton.appendTo(container);
+                
+            });
+        }
+        update()
 
         });
 
@@ -215,7 +324,12 @@
         }
 
         function showNotification(message) {
-            var notificationElement = document.getElementById('notification');
+            var notificationElement
+            if (message.startsWith("Error: ")) {
+                notificationElement = document.getElementById('errorNotification');
+            } else {
+                notificationElement = document.getElementById('notification');
+            }
 
             // Check if the element is found
             if (notificationElement) {

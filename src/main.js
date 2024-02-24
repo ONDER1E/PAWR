@@ -190,7 +190,7 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
       handoffFreqTitle = "Handoff Frequency: "
     }
 
-    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_runway}\nDeparture is with: ${config.departure_is_with}\n${handoffFreqTitle+handoffFreq}\nSquawk Code: ${squawkCode}\n\n`.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct")
+    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_departure_runway}\nDeparture is with: ${config.departure_is_with}\n${handoffFreqTitle+handoffFreq}\nSquawk Code: ${squawkCode}\n\n`.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct")
         
   
     fs.writeFileSync(outputFileName, outputContent);

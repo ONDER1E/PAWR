@@ -7,7 +7,7 @@
     "renew_squawk_on_startup": "True",
     "reset_arrivals_and_departures_on_startup": "True",
     "departure_is_with": "Me",
-    "default_runway": "36L",
+    "default_departure_runway": "36L",
     "listen_to_departure": "True",
     "listen_to_arrival": "True",
     "enable_audio": "True",
