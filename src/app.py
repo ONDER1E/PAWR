@@ -106,40 +106,72 @@ else:
         
     @app.route('/edit', methods=['POST'])
     def edit():
-        edit_data = request.form['edit_data']
-        file_name = request.form['file_name']
-        old_username = request.form['old_username']
-        verify = request.form['verify']
         global all_elements_present
         global err
-        all_elements_present = 0
+        edit_data = request.form['edit_data']
+        file_name = request.form['file_name']
+        if file_name == "Departure.yaml":
+            old_username = request.form['old_username']
+            verify = request.form['verify']
+            all_elements_present = 0
 
-        new_username = verify.split("\n")[0]
-        
-        valid_FP = [old_username, "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", ["Handoff Frequency:", "Handoff Frequencies: "], "Squawk Code: "]
-
-        if new_username != valid_FP[0] or len(verify.split("\n")) > 10:
-            all_elements_present += 1
+            new_username = verify.split("\n")[0]
             
-            err = f'Error: Invalid data/Not allowed to change username'
+            valid_FP = [old_username, "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", ["Handoff Frequency: ", "Handoff Frequencies: "], "Squawk Code: "]
 
-        for index, line in enumerate(verify.split("\n")):
-            if index >= len(valid_FP):
-                break
-            elif index == 8:
-                if " => " in line:
-                    if not line.startswith(valid_FP[index][1]):
-                        all_elements_present += 1
-                        err = f'Error: Invalid {valid_FP[index][1][:-2]}'
-                else:
-                    if not line.startswith(valid_FP[index][0]):
-                        all_elements_present += 1
-                        err = f'Error: Invalid {valid_FP[index][0][:-2]}'
-            elif not line.startswith(valid_FP[index]):
-                if valid_FP[index] == 0:
-                    all_elements_present += 1
-                    err = f'Error: Invalid {valid_FP[index][:-2]}'
+            if new_username != valid_FP[0] or len(verify.split("\n")) > 10:
+                all_elements_present += 1
+                
+                err = f'Error: Invalid data/Not allowed to change username'
 
+            for index, line in enumerate(verify.split("\n")):
+                if index >= len(valid_FP):
+                    if line != "":
+                        all_elements_present += 1
+                        err = f'Error: Invalid data'
+                    break
+                elif index == 8:
+                    if " => " in line:
+                        if not line.startswith(valid_FP[index][1]):
+                            all_elements_present += 1
+                            err = f'Error: Invalid {valid_FP[index][1][:-2]}'
+                    else:
+                        if not line.startswith(valid_FP[index][0]):
+                            all_elements_present += 1
+                            err = f'Error: Invalid {valid_FP[index][0][:-2]}'
+                elif not line.startswith(valid_FP[index]):
+                    if valid_FP[index] != 0:
+                        all_elements_present += 1
+                        err = f'Error: Invalid {valid_FP[index][:-2]}'
+
+        elif file_name == "Arrival.yaml":
+            old_username = request.form['old_username']
+            verify = request.form['verify']
+            all_elements_present = 0
+
+            new_username = verify.split("\n")[0]
+            
+            valid_FP = [old_username, "Callsign: ", "Aircraft: ", "Flight Rules: ", "Departing: ", "Arriving: ", "Route: ", "Flight Level: ", "Squawk Code: "]
+
+            if new_username != valid_FP[0] or len(verify.split("\n")) > 10:
+                all_elements_present += 1
+                
+                err = f'Error: Invalid data/Not allowed to change username'
+
+            for index, line in enumerate(verify.split("\n")):
+                if index >= len(valid_FP):
+                    if line != "":
+                        all_elements_present += 1
+                        err = f'Error: Invalid data'
+                    break
+                elif not line.startswith(valid_FP[index]):
+                    print(line)
+                    if valid_FP[index] != 0:
+                        all_elements_present += 1
+                        err = f'Error: Invalid {valid_FP[index][:-2]}'
+        else:
+            return "Error: Invalid data"
+        
         if all_elements_present == 0:
             try:
                 cache = operate_on_list("read", file_name)

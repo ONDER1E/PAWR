@@ -121,7 +121,7 @@ function checkForDuplicateFP(outputContent, username, outputFileName) {
           if (outputFile == "Departure.yaml") {
             numberOfTimes = 11
           } else if (outputFile == "Arrival.yaml") {
-            numberOfTimes = 9
+            numberOfTimes = 10
           } else {
             numberOfTimes = 0
           }
@@ -190,7 +190,12 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
       handoffFreqTitle = "Handoff Frequency: "
     }
 
-    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_departure_runway}\nDeparture is with: ${config.departure_is_with}\n${handoffFreqTitle+handoffFreq}\nSquawk Code: ${squawkCode}\n\n`.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct")
+    let squawkData
+    if (config.enable_auto_squawk == "True" && config.enable_auto_squawk_for_departures == "True") {
+      squawkData = `\nSquawk Code: ${squawkCode}`
+    }
+
+    outputContent = outputContent + `${flightPlan.trim()}\nRunway: ${config.default_departure_runway}\nDeparture is with: ${config.departure_is_with}\n${handoffFreqTitle+handoffFreq}${squawkData}\n\n`.replace(/.*Departing:.*\n?/, '').replace("Arriving", "Destination").replace(/.*Aircraft:.*\n?/, '').replace("Route: N/A", "Route: GPS Direct")
         
   
     fs.writeFileSync(outputFileName, outputContent);
@@ -203,7 +208,21 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
     const outputFileName = "Arrival.yaml";
     let outputContent = fs.readFileSync(outputFileName, 'utf-8');
     outputContent = checkForDuplicateFP(outputContent, username, outputFileName);
-    outputContent += `\n${flightPlan}\n`;
+
+    const currentSquawk = getCurrentSquawk(squawkFile);
+    const squawkCode = getUpdatedSquawkCode(flightPlan, currentSquawk, incrementSquawkBy);
+
+    // Save the updated Squawk Code back to the file
+    if ( squawkCode != 1200) {
+      saveCurrentSquawk(squawkFile, squawkCode);
+    }
+
+    let squawkData
+    if (config.enable_auto_squawk == "True" && config.enable_auto_squawk_for_arrivals == "True") {
+      squawkData = `\nSquawk Code: ${squawkCode}`
+    }
+
+    outputContent += `\n${flightPlan}${squawkData}\n`;
     fs.writeFileSync(outputFileName, outputContent.replace("Route: N/A", "Route: GPS Direct"));
   }
     
