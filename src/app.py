@@ -118,7 +118,6 @@ else:
         
         valid_FP = [old_username, "Callsign: ", "Flight Rules: ", "Destination: ", "Route: ", "Flight Level: ", "Runway: ", "Departure is with: ", ["Handoff Frequency:", "Handoff Frequencies: "], "Squawk Code: "]
 
-        print(verify.split("\n"))
         if new_username != valid_FP[0] or len(verify.split("\n")) > 10:
             all_elements_present += 1
             
@@ -195,7 +194,6 @@ else:
                     real_type = "str"
             elif edit_data_value.isdigit():
                 real_type = "int"
-            print(real_type + " " + expected_type)
             if not edit_data.startswith(valid_line):
                 return [False, f'Error: Invalid data, missing {valid_line[4:-2]}']
             elif expected_type == "":

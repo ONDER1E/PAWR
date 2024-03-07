@@ -25,7 +25,7 @@ if (config.dont_delete_setup != "True") {
     deleteList.forEach( file => {
       filePath = cwdFolders.join("/") + file
       if (fs.existsSync(filePath)) {
-        console.log(filePath)
+        console.log("deleted " + filePath)
         fs.unlink(filePath, (err) => {});
       }
     })
@@ -93,10 +93,10 @@ function play_audio(audioFile, volume, start_at = 0, kill_prev = false) {
 
 function ICAO_to_name_converter(flightPlan, airport=false) {
   const replaceDict = {
-    'ITKO': 'Tokyo Intl.', 'IDCS': 'Saba', 'IPPH': 'Perth Intl.', 'ILKL': 'Lukla', 'IGRV': 'Grindavik', 'IZOL': 'Izlirani Intl.',
+    'ITKO': 'Tokyo Intl.', 'IDCS': 'Saba', 'IPPH': 'Perth Intl.', 'ILKL': 'Lukla', 'SHV': 'Sea Haven', 'IGRV': 'Grindavik', 'IZOL': 'Izlirani Intl.',
     'ISCM': 'Scampton', 'IJAF': 'Al Najaf', 'IIAB': 'McConnell AFB', 'IBAR': 'Barra', 'IHEN': 'Henstridge', 'ILAR': 'Larnaca Intl.',
     'IPAP': 'Paphos Intl.', 'IBTH': 'Saint Barthélemy', 'IUFO': 'UFO Base', 'ISAU': 'Sauthemptona', 'ISKP': 'Skopelos', 'IMLR': 'Mellor Intl.',
-    'ITRC': 'Training Centre', 'IGAR': 'Air Base Garry', 'IBLT': 'Boltic Airfield', 'IRFD': 'Greater Rockford'
+    'ITRC': 'Training Centre', 'IGAR': 'Air Base Garry', 'IBLT': 'Boltic Airfield', 'IRFD': 'Greater Rockford', 'OWO' : 'Waterloo'
   };
   
   for (const [key, value] of Object.entries(replaceDict)) {
