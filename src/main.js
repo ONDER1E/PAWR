@@ -9,7 +9,7 @@ const { Client } = require('discord.js-selfbot-v13');
 const getRegionsAlongPath = require("./getRegionsAlongPath.js")
 const client = new Client();
 const squawkFile = 'current_squawk';
-if (config.reset_arrivals_and_departures_on_startup == "True") {
+if (config.reset_arrivals_and_departures_on_startup.toLowerCase() == "true") {
   fs.writeFileSync("Departure.yaml", "-----------------------------------\nDeparting\n-----------------------------------\n");
   fs.writeFileSync("Arrival.yaml", `-----------------------------------\nArriving\n${'-' .repeat(35)}`);
 }
@@ -18,7 +18,7 @@ const cwd = process.cwd();
 
 const cwdFolders = cwd.split("\\")
 
-if (config.dont_delete_setup != "True") {
+if (config.dont_delete_setup.toLowerCase() != "true") {
   if (cwdFolders[cwdFolders.length - 1] == "src") {
     cwdFolders.pop()
     deleteList = ["/setup.bat", "/setup.sh"]
@@ -36,7 +36,7 @@ if (!fs.existsSync(squawkFile)) {
   fs.writeFileSync(squawkFile, "");
 }
 
-if (config.renew_squawk_on_startup == "True") {
+if (config.renew_squawk_on_startup.toLowerCase() == "true") {
   saveCurrentSquawk(squawkFile, 1200);
 }
 
@@ -71,7 +71,7 @@ function operateOnList(operation, arg2, arg3) {
 }
 
 function play_audio(audioFile, volume, start_at = 0, kill_prev = false) {
-  if(config.enable_audio == "True") {
+  if(config.enable_audio.toLowerCase() == "true") {
     let command = `ffplay -autoexit -nodisp -loglevel panic -ss ${start_at} -af "volume=${volume}" "${audioFile}"`;
     if (kill_prev != true) {
       run(command)
@@ -143,8 +143,8 @@ function checkForDuplicateFP(outputContent, username, outputFileName) {
 function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy, username) {
 
     // Check if "Departing: ITKO" is present in the flight plan
-  if (flightPlan.includes(`Departing: ${airport}`) && config.listen_to_departure == "True") {
-    if (config.enable_ping_audio == "True") {
+  if (flightPlan.includes(`Departing: ${airport}`) && config.listen_to_departure.toLowerCase() == "true") {
+    if (config.enable_ping_audio.toLowerCase() == "true") {
       play_audio('ping.mp3', config.ping_volume)
     }
 
@@ -191,7 +191,7 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
     }
 
     let squawkData
-    if (config.enable_auto_squawk == "True" && config.enable_auto_squawk_for_departures == "True") {
+    if (config.enable_auto_squawk.toLowerCase() == "true" && config.enable_auto_squawk_for_departures.toLowerCase() == "true") {
       squawkData = `\nSquawk Code: ${squawkCode}`
     }
 
@@ -199,8 +199,8 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
         
   
     fs.writeFileSync(outputFileName, outputContent);
-  } else if (flightPlan.includes(`Arriving: ${airport}`) && config.listen_to_arrival == "True") {
-    if (config.enable_ping_audio == "True") {
+  } else if (flightPlan.includes(`Arriving: ${airport}`) && config.listen_to_arrival.toLowerCase() == "true") {
+    if (config.enable_ping_audio.toLowerCase() == "true") {
       play_audio('ping.mp3', config.ping_volume)
     }
     flightPlan = ICAO_to_name_converter(flightPlan, airport)
@@ -218,7 +218,7 @@ function organiseFlightPlans(flightPlan, airport, squawkFile, incrementSquawkBy,
     }
 
     let squawkData
-    if (config.enable_auto_squawk == "True" && config.enable_auto_squawk_for_arrivals == "True") {
+    if (config.enable_auto_squawk.toLowerCase() == "true" && config.enable_auto_squawk_for_arrivals.toLowerCase() == "true") {
       squawkData = `\nSquawk Code: ${squawkCode}`
     }
 

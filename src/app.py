@@ -82,7 +82,7 @@ else:
     # Start the JavaScript process only if the script is run directly and the flag file is not present
     if __name__ == '__main__' and not os.path.exists(js_flag_file):
         open(js_flag_file, 'w').close()  # Create the flag file to prevent multiple starts
-        subprocess.run(['start', 'http://localhost:8000'], shell=True, check=True)
+        subprocess.run(['start', f'http://localhost:{config.port}'], shell=True, check=True)
         js_thread = threading.Thread(target=run_js_process)
         js_thread.daemon = True
         js_thread.start()
