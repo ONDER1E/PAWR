@@ -55,14 +55,22 @@ def delete_flight_plan(file_path, callsign):
 if __name__ == "__main__":
     file_path_arrival = 'Arrival.yaml'
     file_path_departure = 'Departure.yaml'
+    departure = 1
+    arrival = 1
 
     if len(sys.argv) > 1:
         callsign_to_delete = sys.argv[1]
     else:
         callsign_to_delete = input("Enter Callsign to delete: ")
 
-    arrival = delete_flight_plan(file_path_arrival, callsign_to_delete)
-    departure = delete_flight_plan(file_path_departure, callsign_to_delete)
+    if len(sys.argv) > 2:
+        if sys.argv[2] == "dep":
+            departure = delete_flight_plan(file_path_departure, callsign_to_delete)
+        elif sys.argv[2] == "arr":
+            arrival = delete_flight_plan(file_path_arrival, callsign_to_delete)
+    else:
+        arrival = delete_flight_plan(file_path_arrival, callsign_to_delete)
+        departure = delete_flight_plan(file_path_departure, callsign_to_delete)
 
     if arrival == 0 and departure == 0:
         print(f"Flight plan with Callsign {callsign_to_delete} unable to delete.")

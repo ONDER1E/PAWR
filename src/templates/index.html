@@ -268,7 +268,7 @@
                             $.ajax({
                                 type: 'POST',
                                 url: '/delete',
-                                data: { callsign: callsign },
+                                data: { callsign: callsign, file_name: containerId.substring(0,3) },
                                 success: function(response) {
                                     // Handle success if needed
                                     console.log(response);

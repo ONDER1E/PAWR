@@ -98,8 +98,9 @@ else:
     @app.route('/delete', methods=['POST'])
     def delete():
         callsign = request.form['callsign']
+        file_name = request.form['file_name']
         try:
-            subprocess.run(['python', 'rm.py', callsign], check=True)
+            subprocess.run(['python', 'rm.py', callsign, file_name], check=True)
             return f'Flight plan {callsign} deleted successfully!'
         except Exception as e:
             return f'Error: {str(e)}'
