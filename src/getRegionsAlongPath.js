@@ -62,12 +62,8 @@ exports.getRegionsAlongPath = function(startLocationName, destinationName) {
 
           let distance = findDistance(intersect, startLocation);
 
-          if (getRegionsAlongPathDict[key] == undefined) {
+          if (getRegionsAlongPathDict[key] == undefined || getRegionsAlongPathDict[key] > distance) {
             getRegionsAlongPathDict[key] = distance;
-          } else {
-            if (getRegionsAlongPathDict[key] > distance) {
-              getRegionsAlongPathDict[key] = distance;
-            }
           }
 
         }
