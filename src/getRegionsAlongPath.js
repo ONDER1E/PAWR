@@ -64,6 +64,10 @@ exports.getRegionsAlongPath = function(startLocationName, destinationName) {
 
           if (getRegionsAlongPathDict[key] == undefined) {
             getRegionsAlongPathDict[key] = distance;
+          } else {
+            if (getRegionsAlongPathDict[key] > distance) {
+              getRegionsAlongPathDict[key] = distance;
+            }
           }
 
         }
