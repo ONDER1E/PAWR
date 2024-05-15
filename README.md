@@ -45,7 +45,7 @@ winget install "FFmpeg (Essentials Build)"
 sudo apt install ffmpeg
 ```
 2. Install the **latest release from this repo** ( bottom right of your screen )
-3. Extract the release you've just downloaded and configure `config.json` 
+3. Extract the release you've just downloaded and configure and create the `config.json` file using the `config_example.json` file
 4. Open the release you've just downloaded and run `start.bat` if you're on windows, if you're on linux run `start.sh`
 5. You might get a firewall prompt for python, allow it.
 6. Go on your web brower and enter [http://localhost:8000/](http://localhost:8000/). 
